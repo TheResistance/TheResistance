@@ -1,18 +1,18 @@
 JC=javac
 JFLAGS=
-
+DEST=-d ../bin/
 .SUFFIXES: .java .class
 
 CLASSES =\
-    ServerMain.java \
-    ClientServerSide.java
+    ClientServerSide.java \
+    ServerMain.java
  
 .java.class:
-	$(JC) $(JFLAGS) $*.java
+	$(JC) $(JFLAGS) $(DEST) $*.java
 
 default: classes 
 
 classes: $(CLASSES:.java=.class)
 
 clean:
-	$(RM) *.class
+	$(RM) ../bin/*.class
