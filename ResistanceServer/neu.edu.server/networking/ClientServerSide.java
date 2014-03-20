@@ -6,6 +6,7 @@ Date: March 16, 2014
 */
 package networking;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
@@ -14,14 +15,15 @@ import java.util.Scanner;
 public class ClientServerSide implements Runnable
 {
 
-	private Socket socket;
-	private String client_name;
+	public Socket socket;
+	public String client_name;
+	private Server server;
 	
-	public ClientServerSide(Socket s, String name)
+	public ClientServerSide(Server server, Socket s, String name)
 	{
-		
-		socket = s;
-		client_name = name;
+		this.server = server;
+		this.socket = s;
+		this.client_name = name;
 	}
 	
 	@Override
@@ -38,15 +40,28 @@ public class ClientServerSide implements Runnable
 				{
 					String input = in.nextLine();
 					System.out.println(client_name + " said: " + input);
-					out.println(client_name + " said: " + input);
-					out.flush();
+					server.notifyServer(input);
+					//out.println(client_name + " said: " + input);
+					//out.flush();
 				}
 			}
 		} 
 		catch (Exception e)
 		{
 			e.printStackTrace();
-		}	
+		}
 	}
 
+    @Override
+    protected void finalize() throws Throwable
+    {
+        if(!socket.isClosed())
+        {
+            socket.getOutputStream().close();
+            socket.getInputStream().close();
+            socket.close();
+        }
+    }
+
+	
 }
