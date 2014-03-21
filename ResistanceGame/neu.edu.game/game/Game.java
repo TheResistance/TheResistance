@@ -223,4 +223,11 @@ public class Game
     public boolean gameOver() {
         return (resWon + spiesWon) >= players; 
     }
+    public void Winner() {
+        String str = "The winners are "; 
+        if (gameOver()) {
+            str += (resWon > spiesWon) ? "the resistance" : "the spies"; 
+        }
+        System.out.println(str); 
+    }
 }
