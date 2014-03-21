@@ -22,17 +22,29 @@ public class Game
     private int voteYes = 0;
     private int voteNo = 0; 
     
-    private boolean leaderVote; 
-    private boolean missionVote; 
+    private boolean leaderVote = false; 
+    private boolean missionVote = false; 
+    private boolean leaderPicked = false; 
 
+    private int[] spies; 
+    
     public Game(int players)
     {
         this.players = players;
         votes = new int[players];
-        
         mission = new int[players/2+1]; 
-        leaderVote = true; 
+        leaderVote = true;
         leader = 0; 
+        spies = new int[players]; 
+        int num_spies = spies.length/3+1; 
+        int rnd; 
+        while (num_spies > 0) {
+            rnd= (int)(Math.random() * spies.length); 
+            if (spies[rnd] != 1) {
+                spies[rnd] =1; 
+                num_spies--;
+            }
+        }
     }
     private void endLeaderVote(boolean accept) {
         for (int i = 0; i < players; i++) {
@@ -41,13 +53,14 @@ public class Game
         voteNo = 0;
         voteYes = 0; 
         if (accept) {
+            leaderPicked = true;
             leaderVote = false; 
             missionVote = false; 
         }  else {
             leader = (leader + 1) % players;
         }
     }
-    void proposeMission(int leader, int [] mission) {
+    private void proposeMission(int leader, int [] mission) {
         if (missionVote == false && leaderVote == false && leader == this.leader) {
             missionVote = true; 
             this.mission = mission; 
@@ -59,7 +72,7 @@ public class Game
             }*/
         }
     }
-    int acceptLeader(int player, boolean vote) {
+    private int acceptLeader(int player, boolean vote) {
         if (leaderVote && votes[player] == 0) {
             votes[player] = 1;
             if (vote)
@@ -79,7 +92,7 @@ public class Game
         }
         return 0;
     }
-    int playMission(int player, boolean sucess) {
+    private int playMission(int player, boolean sucess) {
         if (!missionVote) 
             return 0; 
         for (int i = 0; i <= mission.length-turn%2; i++) {
@@ -110,11 +123,14 @@ public class Game
         voteYes = 0; 
         if (success) {
             resWon++;
+            System.out.println("Resistance takes the round (" + resWon + "," + spiesWon + ")");
         } else {
             spiesWon++;
+            System.out.println("Spies take the round (" + spiesWon + "," + resWon + ")");
         }
         turn++;
         leaderVote = true; 
+        leaderPicked = false; 
         missionVote = false; 
     }
     void broadcastMisison() {
@@ -141,9 +157,64 @@ public class Game
         }
         return str;
     }
-    public int getTurn() 
+    public int getLeader() 
     {
-        return turn; 
+        return leader; 
     }
-    
+    private boolean inMission(int player) {
+        if (missionVote) {
+            for (int i = 0; i < mission.length; i++) {
+                if (mission[i] == player)
+                    return true;
+            }
+        }
+        return false; 
+    }
+    public GameState getGameState(int player) {
+        if (leaderVote) {
+            if ( votes[player] == 0 )
+                return GameState.VOTE_ON_LEADER; 
+            return GameState.WAIT_ON_LEADER; 
+        }
+        if (missionVote) {
+            if(inMission(player)) 
+                return GameState.VOTE_ON_MISSION; 
+            return GameState.WAIT_ON_MISSION; 
+        }
+        if (!missionVote && !leaderVote && leaderPicked) {
+            if (player == leader)
+                return GameState.PICK_MISSION;
+            return GameState.WAIT_ON_PICK;
+        }
+        return GameState.STALL; 
+    }
+    public int[] getPlayers() {
+        return spies;
+    }
+    public int[] getEmptyMission() {
+        return new int[mission.length-turn%2];
+    }
+    public void setGameState(int player, SetState s, int[] mission) {
+        switch (s) {
+            case VOTE_NO_ON_LEADER:
+                acceptLeader(player,false);
+                break;
+            case VOTE_YES_ON_LEADER:
+                acceptLeader(player,true); 
+                break;
+            case VOTE_YES_ON_MISSION:
+                playMission(player,true); 
+                break;
+            case VOTE_NO_ON_MISSION:
+                playMission(player,false); 
+                break;
+            case SET_MISSION:
+                proposeMission(player,mission); 
+            default:
+                break;
+        }
+    }
+    public boolean gameOver() {
+        return (resWon + spiesWon) >= players; 
+    }
 }
