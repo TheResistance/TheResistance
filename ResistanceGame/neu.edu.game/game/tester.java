@@ -17,7 +17,6 @@ public class tester
                 SetState s = players[i].play(game_state,leader,mission); 
                 g.setGameState(i,s,mission); 
             }
-
         }
                 
     }

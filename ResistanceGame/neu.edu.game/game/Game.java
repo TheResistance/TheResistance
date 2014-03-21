@@ -62,6 +62,12 @@ public class Game
     }
     private void proposeMission(int leader, int [] mission) {
         if (missionVote == false && leaderVote == false && leader == this.leader) {
+            for (int i = 0; i < mission.length; i++) {
+                if (mission[i] < 0 || mission[i] > players) {
+                    System.out.println("Invalid Mission");
+                    return;
+                }
+            }
             missionVote = true; 
             this.mission = mission; 
             this.leader= (leader+1)%players;
