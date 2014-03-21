@@ -6,18 +6,27 @@ Date: March 16, 2014
 */
 package networking;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Client implements Runnable
 {
 
-	private Socket socket;
+    private Socket socket;
+    Scanner playerInput = new Scanner(System.in);
+    Scanner in;
+    PrintWriter out;
 	
 	public Client(Socket s)
 	{
 		socket = s;
+		Scanner in;
+		PrintWriter out;
 	}
 	
 	@Override
@@ -25,19 +34,45 @@ public class Client implements Runnable
 	{
 		try
 		{
-			Scanner chat = new Scanner(System.in);
-			Scanner in = new Scanner(socket.getInputStream());
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
 			
+			in = new Scanner(socket.getInputStream());
+			out = new PrintWriter(socket.getOutputStream());
+			
+			
+			Thread read = new Thread()
+			{
+                public void run()
+                {
+                    while(true)
+                    {
+                        try
+                        {
+                            String input = playerInput.nextLine();
+                            out.println(input);
+                            out.flush();
+                        }
+                        catch(Exception e)
+                        { 
+                            e.printStackTrace(); 
+                        }
+                    }
+                }
+            };
+
+//            read.setDaemon(true);
+            read.start();
+            
+            /*
 			while (true)
 			{						
-				String input = chat.nextLine();
+				String input = playerInput.nextLine();
 				out.println(input);
 				out.flush();
 				
 				if(in.hasNext())
 					System.out.println(in.nextLine());
 			}
+			*/
 		}
 		catch (Exception e)
 		{
