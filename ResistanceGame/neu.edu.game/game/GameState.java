@@ -1,4 +1,4 @@
-
+package game;
 /**
  * Enumeration class GameState 
  * 

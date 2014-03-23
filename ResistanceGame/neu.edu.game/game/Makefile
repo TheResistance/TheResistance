@@ -13,4 +13,4 @@ clean:
 	$(RM) *.class
 
 run:
-	java tester
+	cd ../ && java game.tester

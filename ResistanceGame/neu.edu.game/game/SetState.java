@@ -1,4 +1,4 @@
-
+package game;
 /**
  * Enumeration class SetState - write a description of the enum class here
  * 
