@@ -1,4 +1,3 @@
-package game;
 import java.util.Scanner;
 import java.lang.RuntimeException;
 /**
@@ -50,21 +49,21 @@ public class Player
         System.out.print("Do you accept player " + leader + " as your leader (y/n)" );
         return getKeyboard() ? SetState.VOTE_YES_ON_LEADER : SetState.VOTE_NO_ON_LEADER; 
     }
-    private SetState pickMission(int[] mission) {
-        int missionSize = mission.length; 
+    private SetState pickMission(int[] mission, int turn) {
+        int missionSize = 0; 
         int input; 
-        System.out.print("Pick players for the mission: "); 
-        while (missionSize > 0) {
+        System.out.print("Pick " + (mission.length ) + " players for the mission: ");
+        while (missionSize < mission.length) {
             try {
-                 mission[--missionSize] = Integer.parseInt(scan.next()); 
+                 mission[missionSize++] = Integer.parseInt(scan.next()); 
             } catch (NumberFormatException e) {
-                missionSize++; 
+                missionSize--; 
                 System.out.println("Player's are entered by integer id"); 
             }
         }
         return SetState.SET_MISSION; 
     }
-    SetState play(GameState g, int leader, int[] mission) {
+    SetState play(GameState g, int leader, int[] mission, int turn) {
         switch(g) {
             case WAIT_ON_MISSION:
                 System.out.println("Waiting on mission vote"); 
@@ -80,7 +79,7 @@ public class Player
             case VOTE_ON_MISSION:
                 return acceptMissionVote();
             case PICK_MISSION:
-                return pickMission(mission); 
+                return pickMission(mission,turn); 
             }
             throw new RuntimeException("Invalid GameState reached");
     }

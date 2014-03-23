@@ -1,4 +1,4 @@
-package game;
+
 /**
  * Simple game engine for the resistance
  * 
@@ -18,7 +18,7 @@ public class Game
     private int[] votes; 
     
     private int[] mission; 
-    
+    private int mission_size; 
     private int voteYes = 0;
     private int voteNo = 0; 
     
@@ -32,7 +32,8 @@ public class Game
     {
         this.players = players;
         votes = new int[players];
-        mission = new int[players/2+1]; 
+        mission = new int[players/2+1];
+        mission_size = players/2 + 1; 
         leaderVote = true;
         leader = 0; 
         spies = new int[players]; 
@@ -67,10 +68,17 @@ public class Game
                     System.out.println("Invalid Mission");
                     return;
                 }
+                if (mission.length > players/2 + (turn+1)%2) {
+                    System.out.println("Only need " + (players/2 + (turn+1)%2) + "  players");
+                    return;
+                }
             }
             missionVote = true; 
             this.mission = mission; 
             this.leader= (leader+1)%players;
+            for (int i = 0; i < mission.length; i++) {
+                System.out.println(mission[i]); 
+            }
             /*mission = new int[this.mission.length];
             for (int i = 0; i < mission.length; i ++ ) {
                 System.out.println(mission[i]); 
@@ -101,9 +109,9 @@ public class Game
     private int playMission(int player, boolean sucess) {
         if (!missionVote) 
             return 0; 
-        for (int i = 0; i <= mission.length-turn%2; i++) {
-            if (i == mission.length-turn%2)
-                return 0;
+        for (int i = 0; i <= mission.length-(turn+1)%2; i++) {
+            //if (i == mission.length-turn%2)
+            //    return 0;
             if (mission[i] == player) {
                 mission[i] = -1*player; 
                 break;
@@ -114,7 +122,7 @@ public class Game
          } else {
              voteYes++;
          }
-         if (mission.length-turn%2 == voteYes) {
+         if (mission.length-(turn+1)%2 == voteYes) {
             endMission(true);
             return 1;
          }
@@ -167,6 +175,9 @@ public class Game
     {
         return leader; 
     }
+    public int getTurn() {
+        return turn;
+    }
     private boolean inMission(int player) {
         if (missionVote) {
             for (int i = 0; i < mission.length; i++) {
@@ -198,7 +209,7 @@ public class Game
         return spies;
     }
     public int[] getEmptyMission() {
-        return new int[mission.length-turn%2];
+        return new int[mission_size-(turn%2)];
     }
     public void setGameState(int player, SetState s, int[] mission) {
         switch (s) {

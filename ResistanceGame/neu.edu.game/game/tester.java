@@ -1,6 +1,3 @@
-package game;
-
-
 public class tester
 {
    public static void main(String args[]) {
@@ -15,12 +12,13 @@ public class tester
                 int leader = g.getLeader(); 
                 int[] mission = g.getEmptyMission(); 
                 GameState game_state = g.getGameState(i); 
+                int turn = g.getTurn(); 
                 System.out.println(game_state); 
                 System.out.println("Playing as " + players[i]); 
-                SetState s = players[i].play(game_state,leader,mission); 
+                SetState s = players[i].play(game_state,leader,mission,turn); 
                 g.setGameState(i,s,mission); 
             }
         }
-                
+        g.Winner();
     }
 }
