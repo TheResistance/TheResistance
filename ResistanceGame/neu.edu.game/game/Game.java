@@ -1,4 +1,4 @@
-
+package game;
 /**
  * Simple game engine for the resistance
  * 
