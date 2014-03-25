@@ -6,6 +6,8 @@ Date: March 16, 2014
 */
 package networking;
 
+import gui.GameGui;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -18,9 +20,12 @@ public class Client implements Runnable
 {
 
     private Socket socket;
+    // client input. Will be passed along to the server using *in*
     Scanner playerInput = new Scanner(System.in);
     Scanner in;
     PrintWriter out;
+    
+    private GameGui gui = new GameGui(0, "", "");
 	
 	public Client(Socket s)
 	{
@@ -35,11 +40,11 @@ public class Client implements Runnable
 		try
 		{
 			
-			in = new Scanner(socket.getInputStream());
-			out = new PrintWriter(socket.getOutputStream());
+			in = new Scanner(socket.getInputStream()); // messages FROM the server
+			out = new PrintWriter(socket.getOutputStream()); // messages TO the server
 			
 			
-			Thread read = new Thread()
+			Thread write = new Thread()
 			{
                 public void run()
                 {
@@ -50,6 +55,28 @@ public class Client implements Runnable
                             String input = playerInput.nextLine();
                             out.println(input);
                             out.flush();
+                        }
+                        catch(Exception e)
+                        { 
+                            e.printStackTrace(); 
+                        }
+                    }
+                }
+            };
+
+//            read.setDaemon(true);
+            write.start();
+            
+			Thread read = new Thread()
+			{
+                public void run()
+                {
+                    while(true)
+                    {
+                        try
+                        {
+                            String serverMessage = in.nextLine();
+                            handleServerMessage(serverMessage);
                         }
                         catch(Exception e)
                         { 
@@ -80,4 +107,8 @@ public class Client implements Runnable
 		} 
 	}
 
+	private void handleServerMessage(String message)
+	{
+		
+	}
 }

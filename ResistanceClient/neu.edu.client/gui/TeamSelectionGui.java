@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /*
@@ -23,7 +24,7 @@ public class TeamSelectionGui extends JFrame
 	JButton acceptButton;
 	JButton rejectButton;
 	
-	TeamSelectionGui()
+	TeamSelectionGui(int choiceCount)
 	{
 		panel = new JPanel();
 		getContentPane().add(panel);
@@ -31,6 +32,10 @@ public class TeamSelectionGui extends JFrame
 		panel.setLayout(null);
 //		panel.setLayout(new GridLayout(5, 1));
 //	    panel.setAlignmentY(JComponent.LEFT_ALIGNMENT);
+		
+		JLabel choices = new JLabel("Please choose " + choiceCount + " players.");
+		choices.setBounds(125, 25, 200, 20);
+		panel.add(choices);
 		
 		CheckBoxList cbList = new CheckBoxList();
 	    JCheckBox player1 = new JCheckBox("Player 1");

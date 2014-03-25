@@ -10,6 +10,8 @@ import gui.GameGui;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.SwingUtilities;
 
@@ -30,8 +32,13 @@ public class ClientMain
             @Override
             public void run() 
             {
-                GameGui ex = new GameGui(4, "Resistance", "Player 2");
-                ex.setVisible(true);
+                GameGui gui = new GameGui(0, "", "");
+                gui.setVisible(true);
+                
+//                List<String> team = new ArrayList<String>();
+//                team.add("Player 1");
+//                team.add("Player 4");
+//                gui.setCurrentlySelectedTeam(team);
             }
         });
 	}
