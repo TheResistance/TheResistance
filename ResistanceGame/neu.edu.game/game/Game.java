@@ -1,4 +1,4 @@
-package game; 
+package game;
 /**
  * Simple game engine for the resistance
  * 
@@ -71,6 +71,13 @@ public class Game
                 if (mission.length > players/2 + (turn+1)%2) {
                     System.out.println("Only need " + (players/2 + (turn+1)%2) + "  players");
                     return;
+                }
+                //Check for duplicates
+                for (int j = 0; j < mission.length; j++) {
+                    if (i!=j && mission[i] == mission[j]) {
+                        System.out.println("No duplicate players allowed on the mission"); 
+                        return;
+                    }
                 }
             }
             missionVote = true; 
@@ -208,8 +215,11 @@ public class Game
     public int[] getPlayers() {
         return spies;
     }
-    public int[] getEmptyMission() {
-        return new int[mission_size-(turn%2)];
+    public boolean amISpy(int player) {
+        return spies[player] == 1 ? true : false; 
+    }
+    public int getMissionLength() {
+        return mission_size-(turn%2); 
     }
     public void setGameState(int player, SetState s, int[] mission) {
         switch (s) {

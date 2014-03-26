@@ -1,5 +1,4 @@
-package game; 
-
+package game;
 import java.util.Scanner;
 import java.lang.RuntimeException;
 /**
@@ -51,7 +50,7 @@ public class Player
         System.out.print("Do you accept player " + leader + " as your leader (y/n)" );
         return getKeyboard() ? SetState.VOTE_YES_ON_LEADER : SetState.VOTE_NO_ON_LEADER; 
     }
-    private SetState pickMission(int[] mission, int turn) {
+    private SetState pickMission(int[] mission) {
         int missionSize = 0; 
         int input; 
         System.out.print("Pick " + (mission.length ) + " players for the mission: ");
@@ -65,7 +64,10 @@ public class Player
         }
         return SetState.SET_MISSION; 
     }
-    SetState play(GameState g, int leader, int[] mission, int turn) {
+    public int[] createEmptyMission(int missionLength) {
+        return new int[missionLength];
+    }
+    public SetState play(GameState g, int leader, int[] mission) {
         switch(g) {
             case WAIT_ON_MISSION:
                 System.out.println("Waiting on mission vote"); 
@@ -81,7 +83,7 @@ public class Player
             case VOTE_ON_MISSION:
                 return acceptMissionVote();
             case PICK_MISSION:
-                return pickMission(mission,turn); 
+                return pickMission(mission); 
             }
             throw new RuntimeException("Invalid GameState reached");
     }
