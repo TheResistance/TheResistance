@@ -23,8 +23,8 @@ public class ClientMain
 	
 	public static void main(String[] args) throws IOException
 	{
-//		InitializeClientNetwork init = new InitializeClientNetwork();
-//		init.initialize();
+		InitializeClientNetwork init = new InitializeClientNetwork();
+		init.initialize();
 		
 
 	    SwingUtilities.invokeLater(new Runnable() 

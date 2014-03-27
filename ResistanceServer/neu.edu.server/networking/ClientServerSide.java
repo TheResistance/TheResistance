@@ -7,9 +7,13 @@ Date: March 16, 2014
 package networking;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+
+import core.ClientSendMessage;
 
 
 public class ClientServerSide implements Runnable
@@ -17,7 +21,7 @@ public class ClientServerSide implements Runnable
 
 	public Socket socket;
 	public String client_name;
-	private Server server;
+	public Server server;
 	
 	public ClientServerSide(Server server, Socket s, String name)
 	{
@@ -31,19 +35,25 @@ public class ClientServerSide implements Runnable
 	{
 		try 
 		{
-			Scanner in = new Scanner(socket.getInputStream());
-			PrintWriter out = new PrintWriter(socket.getOutputStream());
+			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
+			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			
 			while (true)
 			{		
-				if (in.hasNext())
+				Object input = in.readObject();
+				ClientSendMessage clientMessage = null;
+				if (input instanceof ClientSendMessage)
 				{
-					String input = in.nextLine();
-					System.out.println(client_name + " said: " + input);
-					server.notifyServer(input);
-					//out.println(client_name + " said: " + input);
-					//out.flush();
+					clientMessage = (ClientSendMessage)input;
 				}
+				else
+				{
+					System.out.println("WRONG MESSAGE TYPE");
+				}
+				System.out.println(client_name + " said: " + input);
+				server.notifyServer(clientMessage);
+				//out.println(client_name + " said: " + input);
+				//out.flush();
 			}
 		} 
 		catch (Exception e)

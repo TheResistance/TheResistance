@@ -15,9 +15,9 @@ public class ServerMain
     public static void main(String[] args)
     {
         ResistanceGame game = new ResistanceGame();
-        game.beginGame();
         Server server = new Server();
         server.startServer(game);
-
+        game.setServer(server);
+        game.beginGame();
     }
 }

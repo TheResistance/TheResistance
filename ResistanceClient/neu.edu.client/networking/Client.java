@@ -109,6 +109,6 @@ public class Client implements Runnable
 
 	private void handleServerMessage(String message)
 	{
-		
+		System.out.println("message received: " + message);
 	}
 }

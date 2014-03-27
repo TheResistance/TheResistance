@@ -10,7 +10,7 @@ import java.net.Socket;
 public class InitializeClientNetwork
 {
     private final static int PORT = 7766;
-    private final static String HOST = "10.102.34.215";
+    private final static String HOST = "localhost";
     
     public void initialize()
     {

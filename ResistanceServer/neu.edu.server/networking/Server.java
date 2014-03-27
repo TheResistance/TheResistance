@@ -6,13 +6,17 @@ Group: The Resistance
 Date: March 18, 2014
 */
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import core.ClientSendMessage;
 import core.ResistanceGame;
+import core.ServerSendMessage;
 
 
 
@@ -21,7 +25,7 @@ public class Server
     private ServerSocket server = null;
     public List<ClientServerSide> client_list = new ArrayList<ClientServerSide>();
     
-    public LinkedBlockingQueue<Object> messages = new LinkedBlockingQueue<Object>();
+    public LinkedBlockingQueue<ClientSendMessage> messages = new LinkedBlockingQueue<ClientSendMessage>();
     
     ResistanceGame game;
     
@@ -55,15 +59,29 @@ public class Server
         }
     }
     
-    public void sendAll(String message)
+    public void sendAll(ServerSendMessage message)
     {
-        
+    	System.out.println("sending message");
+    	ObjectOutputStream out;
+        for (ClientServerSide c : client_list)
+        {
+        	try 
+        	{
+				out = new ObjectOutputStream(c.socket.getOutputStream());
+	        	out.writeObject(message);
+	        	out.flush();
+			}
+        	catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+        }
     }
     
-    public void notifyServer(String message) throws InterruptedException
+    public void notifyServer(ClientSendMessage message) throws InterruptedException
     {
         messages.put(message);
-        game.message(messages.take());
+        game.fromClientMessage(messages.take());
     }
 
     @Override
