@@ -27,7 +27,7 @@ public class Client implements Runnable
     ObjectInputStream in;
     ObjectOutputStream out;
     
-    private GameGui gui = new GameGui(0, "", "");
+    private GameGui gui = new GameGui(this, 0, "", "");
 	
 	public Client(Socket s)
 	{

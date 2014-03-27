@@ -52,10 +52,15 @@ public class GameGui extends JFrame
 	private boolean isLeader = false;
 	private boolean isMissionParticipant = false;
 	private List<String> selectedTeam = new ArrayList<String>();
-
-    public GameGui(Client c, int player, String faction, String otherSpy) 
+	
+	public GameGui(Client c, int player, String faction, String otherSpy) 
     {
-    	this.client = c;
+		this(player, faction, otherSpy);
+		this.client = c;
+    }
+
+    public GameGui(int player, String faction, String otherSpy) 
+    {
     	playerFaction = faction;
     	
 		panel = new JPanel();
