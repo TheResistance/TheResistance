@@ -36,7 +36,7 @@ public class ClientServerSide implements Runnable
 		try 
 		{
 			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+//			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
 			
 			while (true)
 			{		

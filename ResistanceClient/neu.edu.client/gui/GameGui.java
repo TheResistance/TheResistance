@@ -19,8 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import networking.Client;
+
 public class GameGui extends JFrame 
 {
+	private Client client;
+	
 	private JPanel panel;
 	private JButton acceptButton;
 	private JButton rejectButton;
@@ -49,8 +53,9 @@ public class GameGui extends JFrame
 	private boolean isMissionParticipant = false;
 	private List<String> selectedTeam = new ArrayList<String>();
 
-    public GameGui(int player, String faction, String otherSpy) 
+    public GameGui(Client c, int player, String faction, String otherSpy) 
     {
+    	this.client = c;
     	playerFaction = faction;
     	
 		panel = new JPanel();

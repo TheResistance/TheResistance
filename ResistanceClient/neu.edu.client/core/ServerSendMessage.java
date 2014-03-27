@@ -8,7 +8,7 @@ Group: The Resistance
 Date: March 27, 2014
 */
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 public class ServerSendMessage implements Serializable
@@ -17,7 +17,8 @@ public class ServerSendMessage implements Serializable
 	public List<Integer> groupSelection = new ArrayList<Integer>();
 	public String groupSelectionResult;
 	public String missionResult;
-	public HashMap<Integer,String> playerVotes;
+	public int missionFailVotes;
+	public Hashtable<Integer,String> playerVotes;
 	public boolean gameOver;
 	public String phase;
 	public String message;

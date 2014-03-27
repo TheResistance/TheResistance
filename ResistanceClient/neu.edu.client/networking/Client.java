@@ -16,22 +16,22 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import core.ServerSendMessage;
+
 public class Client implements Runnable
 {
 
     private Socket socket;
     // client input. Will be passed along to the server using *in*
     Scanner playerInput = new Scanner(System.in);
-    Scanner in;
-    PrintWriter out;
+    ObjectInputStream in;
+    ObjectOutputStream out;
     
     private GameGui gui = new GameGui(0, "", "");
 	
 	public Client(Socket s)
 	{
 		socket = s;
-		Scanner in;
-		PrintWriter out;
 	}
 	
 	@Override
@@ -40,8 +40,8 @@ public class Client implements Runnable
 		try
 		{
 			
-			in = new Scanner(socket.getInputStream()); // messages FROM the server
-			out = new PrintWriter(socket.getOutputStream()); // messages TO the server
+			in = new ObjectInputStream(socket.getInputStream()); // messages FROM the server
+			out = new ObjectOutputStream(socket.getOutputStream()); // messages TO the server
 			
 			
 			Thread write = new Thread()
@@ -53,7 +53,7 @@ public class Client implements Runnable
                         try
                         {
                             String input = playerInput.nextLine();
-                            out.println(input);
+                            //out.println(input);
                             out.flush();
                         }
                         catch(Exception e)
@@ -73,15 +73,24 @@ public class Client implements Runnable
                 {
                     while(true)
                     {
-                        try
-                        {
-                            String serverMessage = in.nextLine();
-                            handleServerMessage(serverMessage);
-                        }
-                        catch(Exception e)
-                        { 
-                            e.printStackTrace(); 
-                        }
+                    	try
+                    	{
+	                        Object objectMessage = in.readObject();
+	                        ServerSendMessage serverMessage = null;
+	                        if (objectMessage instanceof ServerSendMessage)
+	                        {
+	                        	serverMessage = (ServerSendMessage) objectMessage;
+	                            handleServerMessage(serverMessage);
+	                        }
+	                        else
+	                        {
+	                        	System.out.println("UH OH. WRONG MESSAGE TYPE");
+	                        }
+                    	}
+	                    catch(Exception e)
+	                    { 
+	                        e.printStackTrace(); 
+	                    }
                     }
                 }
             };
@@ -107,7 +116,7 @@ public class Client implements Runnable
 		} 
 	}
 
-	private void handleServerMessage(String message)
+	private void handleServerMessage(ServerSendMessage message)
 	{
 		System.out.println("message received: " + message);
 	}
