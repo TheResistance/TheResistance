@@ -27,6 +27,7 @@ public class ResistanceGame
     public int currentLeader = -1;
     public int [] spies = new int [2];
     public int [] missionGroup;
+    public int rejectCount;
     
     public boolean gameOver = false;
     
@@ -77,9 +78,32 @@ public class ResistanceGame
     
     public void beginGame()
     {
+        // First need to send out assignments
+        for (int i = 1; i <= 5; i++)
+        {
+	        ServerSendMessage message = new ServerSendMessage();
+	        message.phase = "assignment";
+	        message.playerTurn = order.get(0);
+	        if (i == spies[0])
+	        {
+	        	message.faction = "spy";
+	        	message.otherSpy = spies[1];
+	        }
+	        else if (i == spies[1])
+	        {
+	        	message.faction = "spy";
+	        	message.otherSpy = spies[0];
+	        }
+	        else
+	        	message.faction = "resistance";
+	        if (i <= server.client_list.size())
+	        	server.sendToClient(i, message);
+        }
     	ServerSendMessage msg = new ServerSendMessage();
     	msg.playerTurn = playerTurn;
     	msg.phase = missionPhase;
+    	msg.currentLeader = currentLeader;
+    	msg.groupSize = missionSize[missionNumber];
     	sendServerMessage(msg);
     }
     
@@ -97,12 +121,13 @@ public class ResistanceGame
         	switch(message.messageType)
         	{
         		case ("groupSelection"):
-        			groupSelection(message.playerId, message.message);
+        			groupSelection(message.playerId, message.groupSelection);
         			break;
         		case ("groupApproval"):
         			submitGroupApprovalVote(message.playerId, message.message);
         			break;
         		case ("missionVote"):
+        			submitPlayerMissionVote(message.playerId, message.message);
         			break;
         	}		
         }
@@ -110,17 +135,17 @@ public class ResistanceGame
         	System.out.println("Ignored message from player " + message.playerId + " b/c it is not their turn.");
     }
     
-    public void groupSelection(int player, String undecipheredString)
+    public void groupSelection(int player, List<Integer> groupSelection)
     {
     	if (player != currentLeader)
     	{
     		System.out.println("Player " + player + " is not the current leader.");
     		return;
     	}
-    	String[] participants = undecipheredString.split("&");
-    	if (participants.length != missionSize[missionNumber])
+    	//String[] participants = undecipheredString.split("&");
+    	if (groupSelection.size() != missionSize[missionNumber])
     	{
-    		System.out.println("mission size is " + missionSize[missionNumber] + ". Player " + player + " selected " + participants.length);
+    		System.out.println("mission size is " + missionSize[missionNumber] + ". Player " + player + " selected " + groupSelection.size());
     		return;
     	}
     	missionGroup = new int[missionSize[missionNumber]];
@@ -128,14 +153,28 @@ public class ResistanceGame
     	message.groupSelection = new ArrayList<Integer>();
     	for (int i=0; i<missionGroup.length; i++)
     	{
-    		missionGroup[i] = new Integer(participants[i]);
+    		missionGroup[i] = groupSelection.get(i);
     		message.groupSelection.add(missionGroup[i]);
     	}
-    	message.phase = "groupApproval";
-    	int next = nextInOrder(player);
-    	message.playerTurn = next;
-    	playerTurn = next;
-    	server.sendAll(message);
+    	if (rejectCount != 4)
+    	{
+	    	message.phase = "groupApproval";
+	    	message.currentLeader = currentLeader;
+	    	int next = nextInOrder(player);
+	    	message.playerTurn = next;
+	    	playerTurn = next;
+	    	server.sendAll(message);
+    	}
+    	else
+    	{
+    		rejectCount = 0;
+    		message.phase = "missionVote";
+    		message.currentLeader = currentLeader;
+    		message.groupSelectionResult = "success";
+    		int next = nextMissionVoter(-1);
+    		message.playerTurn = next;
+			playerTurn = next;
+    	}
     	groupApprovalVotes = new Hashtable<Integer, String>();
     }
     
@@ -171,9 +210,11 @@ public class ResistanceGame
     		{
         		message.phase = "missionVote";
 	    		message.groupSelectionResult = "success";
+	    		message.currentLeader = currentLeader;
 	    		int next = nextMissionVoter(-1);
 	    		message.playerTurn = next;
     			playerTurn = next;
+    			rejectCount = 0;
     		}
     		// If there are not enough to pass, revert to group selection phase
     		else
@@ -182,7 +223,11 @@ public class ResistanceGame
     			message.groupSelectionResult = "fail";
     			int next = nextInOrder(player);
     			message.playerTurn = next;
+    			message.groupSize = missionSize[missionNumber];
+    			currentLeader = next;
+    			message.currentLeader = currentLeader;
     			playerTurn = next;
+    			rejectCount++;
     		}
     		server.sendAll(message);
     	}
@@ -191,6 +236,7 @@ public class ResistanceGame
     	{
     		ServerSendMessage message = new ServerSendMessage();
     		message.phase = "groupApproval";
+    		message.currentLeader = currentLeader;
     		int next = nextInOrder(player);
     		message.playerTurn = next;
 			playerTurn = next;
@@ -237,10 +283,13 @@ public class ResistanceGame
         		message.phase = "groupSelection";
 	    		message.missionResult = "fail";
 	    		message.missionFailVotes = failCount;
+	    		message.groupSize = missionSize[++missionNumber];
 	    		message.gameOver = gameOver;
 	    		// set the next player to the person after the leader. New round starting.
 	    		int next = nextInOrder(currentLeader);
 	    		message.playerTurn = next;
+	    		currentLeader = next;
+	    		message.currentLeader = currentLeader;
     			playerTurn = next;
     		}
     		// If no one fails, succeed mission, pass control to person after the current leader
@@ -252,8 +301,11 @@ public class ResistanceGame
     			message.groupSelectionResult = "success";
     			int next = nextInOrder(currentLeader);
     			message.playerTurn = next;
+    			message.groupSize = missionSize[++missionNumber];
     			message.gameOver = gameOver;
     			playerTurn = next;
+    			currentLeader = next;
+    			message.currentLeader = currentLeader;
     			missionSuccesses++;
 
     		}
@@ -273,6 +325,7 @@ public class ResistanceGame
     		message.phase = "missionVote";
     		int next = nextMissionVoter(player);
     		message.playerTurn = next;
+    		message.currentLeader = currentLeader;
 			playerTurn = next;
     		server.sendAll(message);
     	}

@@ -9,6 +9,7 @@ Date: March 22, 2014
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,39 +20,43 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import core.ClientSendMessage;
 import networking.Client;
 
 public class GameGui extends JFrame 
 {
-	private Client client;
+	public Client client;
 	
-	private JPanel panel;
-	private JButton acceptButton;
-	private JButton rejectButton;
+	public JPanel panel;
+	public JButton acceptButton;
+	public JButton rejectButton;
 	
-	private JLabel selfLabel;
-	private JLabel turnLabel;
-	private JLabel factionLabel;
-	private JLabel turnRoleLabel;
-	private JLabel otherSpyLabel;
-	private JLabel selectedTeamLabel;
-	private JLabel gameMessagesLabel;
+	public JLabel selfLabel;
+	public JLabel turnLabel;
+	public JLabel factionLabel;
+	public JLabel turnRoleLabel;
+	public JLabel otherSpyLabel;
+	public JLabel selectedTeamLabel;
+	public JLabel gameMessagesLabel;
 	
-	private JTextField selfText;
-	private JTextField turnText;
-	private JTextField factionText;
-	private JTextField turnRoleText;
-	private JTextField otherSpyText;
-	private JTextField selectedTeamText;
-	private JTextField gameMessages;
+	public JTextField selfText;
+	public JTextField turnText;
+	public JTextField factionText;
+	public JTextField turnRoleText;
+	public JTextField otherSpyText;
+	public JTextField selectedTeamText;
+	public JTextField gameMessages;
 	
-	private String turn = "";
-	private String currentRole = "";
-	private String playerFaction;
-	private int playerNumber;
-	private boolean isLeader = false;
-	private boolean isMissionParticipant = false;
-	private List<String> selectedTeam = new ArrayList<String>();
+	public String turn = "";
+	public String currentRole = "";
+	public String playerFaction;
+	public int playerNumber;
+	public boolean isLeader = false;
+	public boolean isMissionParticipant = false;
+	public List<String> selectedTeam = new ArrayList<String>();
+	public String phase;
+	
+	TeamSelectionGui selectionGui;
 	
 	public GameGui(Client c, int player, String faction, String otherSpy) 
     {
@@ -62,6 +67,7 @@ public class GameGui extends JFrame
     public GameGui(int player, String faction, String otherSpy) 
     {
     	playerFaction = faction;
+    	playerNumber = player;
     	
 		panel = new JPanel();
 		getContentPane().add(panel);
@@ -176,19 +182,19 @@ public class GameGui extends JFrame
 			@Override
 			public void actionPerformed(ActionEvent event) 
 			{
-				createTeamSelectionGui();
+				client.sendServerVote(phase, "accept");
 			}
 		});
 		
 		rejectButton = new JButton("Reject");
 		rejectButton.setBounds(350, 500, 150, 50);
 		
-		acceptButton.addActionListener(new ActionListener() 
+		rejectButton.addActionListener(new ActionListener() 
 		{
 			@Override
 			public void actionPerformed(ActionEvent event) 
 			{
-			
+				client.sendServerVote(phase, "reject");
 			}
 		});
 		
@@ -219,10 +225,10 @@ public class GameGui extends JFrame
 		if (playerFaction != "Spy") hideSpyInformation();
     }
     
-    private void createTeamSelectionGui()
+    public void createTeamSelectionGui(int choiceCount)
     {
-    	TeamSelectionGui selGui = new TeamSelectionGui(3);
-    	selGui.setVisible(true);
+    	selectionGui = new TeamSelectionGui(this, choiceCount);
+    	selectionGui.setVisible(true);
     }
     
     public void hideSpyInformation()
@@ -236,12 +242,14 @@ public class GameGui extends JFrame
     {
     	otherSpyLabel.setVisible(true);
     	otherSpyText.setVisible(true);
+    	panel.updateUI();
     }
     
     public void setTurnRole(String role)
     {
     	currentRole = role;
     	turnRoleText.setText(currentRole);
+    	turnRoleText.setVisible(true);
 		panel.updateUI();
     }
     
@@ -249,6 +257,7 @@ public class GameGui extends JFrame
     {
     	turn = curPlayer;
     	turnText.setText(turn);
+    	turnText.setVisible(true);
     	panel.updateUI();
     }
     
@@ -276,6 +285,36 @@ public class GameGui extends JFrame
     {
     	playerNumber = num;
     	selfLabel.setText("Player " + num);
+    	selfLabel.setVisible(true);
     	panel.updateUI();
+    }
+    
+    public void updateFactionInformation()
+    {
+    	factionText.setText(playerFaction);
+    	factionText.setVisible(true);
+    	panel.updateUI();
+    }
+    
+    public void sendGroupSelection(List<Integer> groupMembers)
+    {
+    	ClientSendMessage message = new ClientSendMessage();
+    	message.playerId = playerNumber;
+    	message.messageType = "groupSelection";
+    	for (Integer choice : groupMembers)
+    	{
+    		System.out.println("group choice: " + choice);
+    	}
+    	message.groupSelection = groupMembers;
+    	selectionGui.setVisible(false);
+    	selectionGui.dispose();
+    	try
+    	{
+			client.out.writeObject(message);
+		}
+    	catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }

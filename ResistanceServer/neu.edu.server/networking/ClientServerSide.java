@@ -20,14 +20,27 @@ public class ClientServerSide implements Runnable
 {
 
 	public Socket socket;
-	public String client_name;
+	public int playerNumber;
 	public Server server;
+	public ObjectInputStream in;
+	public ObjectOutputStream out;
 	
-	public ClientServerSide(Server server, Socket s, String name)
+	public ClientServerSide(Server server, Socket s, int number)
 	{
 		this.server = server;
 		this.socket = s;
-		this.client_name = name;
+		this.playerNumber = number;
+		try
+		{
+			
+			out = new ObjectOutputStream(socket.getOutputStream());
+			out.flush();
+			in = new ObjectInputStream(socket.getInputStream());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
@@ -35,8 +48,7 @@ public class ClientServerSide implements Runnable
 	{
 		try 
 		{
-			ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
-//			ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+			
 			
 			while (true)
 			{		
@@ -50,7 +62,7 @@ public class ClientServerSide implements Runnable
 				{
 					System.out.println("WRONG MESSAGE TYPE");
 				}
-				System.out.println(client_name + " said: " + input);
+				System.out.println("Player " + playerNumber + " said: " + input);
 				server.notifyServer(clientMessage);
 				//out.println(client_name + " said: " + input);
 				//out.flush();

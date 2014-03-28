@@ -1,6 +1,7 @@
 package core;
 
 import java.io.Serializable;
+import java.util.List;
 /*
 Created by: Britton Horn
 Group: The Resistance
@@ -14,4 +15,5 @@ public class ClientSendMessage implements Serializable
 	// groupSelection, groupApproval, missionVote
 	public String messageType;
 	public String message;
+	public List<Integer> groupSelection;
 }

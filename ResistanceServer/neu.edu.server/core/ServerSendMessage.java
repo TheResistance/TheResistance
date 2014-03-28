@@ -22,4 +22,9 @@ public class ServerSendMessage implements Serializable
 	public boolean gameOver;
 	public String phase;
 	public String message;
+	public int missionNumber;
+	public int groupSize;
+	public int currentLeader;
+	public String faction;
+	public int otherSpy;
 }

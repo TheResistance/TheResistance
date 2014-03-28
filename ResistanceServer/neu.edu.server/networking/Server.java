@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -23,7 +24,7 @@ import core.ServerSendMessage;
 public class Server
 {
     private ServerSocket server = null;
-    public List<ClientServerSide> client_list = new ArrayList<ClientServerSide>();
+    public Hashtable<Integer, ClientServerSide> client_list = new Hashtable<Integer, ClientServerSide>();
     
     public LinkedBlockingQueue<ClientSendMessage> messages = new LinkedBlockingQueue<ClientSendMessage>();
     
@@ -46,11 +47,15 @@ public class Server
                 Socket s = server.accept();
                 System.out.println("Client connected from " + s.getLocalAddress().getHostName());
                 
-                ClientServerSide client = new ClientServerSide(this, s, "Player" + player_counter++);
-                client_list.add(client);
+                ClientServerSide client = new ClientServerSide(this, s, player_counter);
+
+//                client.out = new ObjectOutputStream(s.getOutputStream());
                 Thread t = new Thread(client);
                 t.start();
+                client_list.put(player_counter, client);
+                player_counter++;
             }
+
         } 
         catch (Exception e) 
         {
@@ -63,19 +68,41 @@ public class Server
     {
     	System.out.println("sending message");
     	ObjectOutputStream out;
-        for (ClientServerSide c : client_list)
-        {
+    	for (Integer key : client_list.keySet())
+    	{
+    		ClientServerSide c = client_list.get(key);
         	try 
         	{
-				out = new ObjectOutputStream(c.socket.getOutputStream());
-	        	out.writeObject(message);
-	        	out.flush();
+        		
+				c.out.writeObject(message);
+	        	c.out.flush();
 			}
         	catch (IOException e) 
 			{
 				e.printStackTrace();
 			}
         }
+    }
+    
+    public void sendToClient(int playerNumber, ServerSendMessage message)
+    {
+    	System.out.println("getting connection for player " + playerNumber);
+    	System.out.println("client list length: " + client_list.size());
+    	ClientServerSide c = client_list.get(playerNumber);
+    	
+    	try 
+    	{
+    		if (c == null)
+    			System.out.println("C IS NULL!");
+    		if (c.out == null)
+    			System.out.println("C's output is null!");
+			c.out.writeObject(message);
+        	c.out.flush();
+		}
+    	catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
     }
     
     public void notifyServer(ClientSendMessage message) throws InterruptedException
@@ -90,8 +117,9 @@ public class Server
         
         server.close();
         
-        for(ClientServerSide s : client_list)
+        for(Integer key : client_list.keySet())
         {
+        	ClientServerSide s = client_list.get(key);
             try
             {
                 if (!s.socket.isClosed())
