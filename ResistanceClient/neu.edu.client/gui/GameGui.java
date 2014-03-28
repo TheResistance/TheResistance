@@ -17,6 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -45,7 +46,7 @@ public class GameGui extends JFrame
 	public JTextField turnRoleText;
 	public JTextField otherSpyText;
 	public JTextField selectedTeamText;
-	public JTextField gameMessages;
+	public JTextArea gameMessages;
 	
 	public String turn = "";
 	public String currentRole = "";
@@ -53,7 +54,7 @@ public class GameGui extends JFrame
 	public int playerNumber;
 	public boolean isLeader = false;
 	public boolean isMissionParticipant = false;
-	public List<String> selectedTeam = new ArrayList<String>();
+	public List<Integer> selectedTeam = new ArrayList<Integer>();
 	public String phase;
 	
 	TeamSelectionGui selectionGui;
@@ -145,9 +146,9 @@ public class GameGui extends JFrame
 //		selectedTeam.add("Player 5");
 		
 		String tempTeam = "   ";
-		for (String member : selectedTeam)
+		for (Integer member : selectedTeam)
 		{
-			tempTeam += ", " + member;
+			tempTeam += ", Player " + member;
 		}
 		tempTeam = tempTeam.substring(1);
 		
@@ -164,7 +165,7 @@ public class GameGui extends JFrame
 		gameMessagesLabel.setBounds(25, 250, 525, 20);
 		
 		myFont = new Font("Sans Serif", Font.PLAIN, 10);
-		gameMessages = new JTextField();
+		gameMessages = new JTextArea();
 		gameMessages.setFont(myFont);
 		gameMessages.setBounds(25, 270, 525, 225);
 		gameMessages.setEditable(false);
@@ -261,18 +262,21 @@ public class GameGui extends JFrame
     	panel.updateUI();
     }
     
-    public void setCurrentlySelectedTeam(List<String> team)
+    public void setCurrentlySelectedTeam(List<Integer> team)
     {
-    	selectedTeam = new ArrayList<String>();
-    	String tempTeam = new String();
-    	for (String member : team)
+    	if (team.size() > 0)
     	{
-    		selectedTeam.add(member);
-			tempTeam += ", " + member;
-		}
-		tempTeam = tempTeam.substring(1);
-    	selectedTeamText.setText(tempTeam);
-    	panel.updateUI();
+	    	selectedTeam = new ArrayList<Integer>();
+	    	String tempTeam = new String();
+	    	for (Integer member : team)
+	    	{
+	    		selectedTeam.add(member);
+				tempTeam += ", Player " + member;
+			}
+			tempTeam = tempTeam.substring(1);
+	    	selectedTeamText.setText(tempTeam);
+	    	panel.updateUI();
+    	}
     }
     
     public void sendClientMessage(String message)

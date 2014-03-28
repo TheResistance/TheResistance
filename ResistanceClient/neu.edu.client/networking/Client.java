@@ -16,6 +16,8 @@ import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import core.ClientSendMessage;
@@ -134,7 +136,7 @@ public class Client implements Runnable
 
 	private void handleServerMessage(ServerSendMessage message)
 	{
-		System.out.println("message received: " + message.phase);
+		message.printMessage();
 		if (gui == null)
 			System.out.println("gui is null");
 		if (message == null)
@@ -148,11 +150,22 @@ public class Client implements Runnable
 			System.out.println("group size: " + message.groupSize);
 			gui.createTeamSelectionGui(message.groupSize);
 		}
-		else if("groupApproval".equals(message.phase) && message.playerTurn == gui.playerNumber)
+		else if("groupApproval".equals(message.phase))
 		{
-			gui.isMissionParticipant = false;
-			gui.phase = "groupApproval";
-			gui.setTurnRole("Vote to approve or reject the group proposal by Player " + message.currentLeader);
+			if (message.playerTurn == gui.playerNumber)
+			{
+				gui.isMissionParticipant = false;
+				gui.phase = "groupApproval";
+				gui.setTurnRole("Vote to approve or reject the group proposal by Player " + message.currentLeader);
+				
+			}
+			else
+			{
+				gui.isMissionParticipant = false;
+				gui.setTurnRole("Waiting...");
+				gui.updateFactionInformation();
+			}
+			gui.setCurrentlySelectedTeam(message.groupSelection);
 		}
 		else if("missionVote".equals(message.phase) && message.playerTurn == gui.playerNumber)
 		{
@@ -165,7 +178,7 @@ public class Client implements Runnable
 			System.out.println("assignment phase");
 			gui.phase = "assignment";
 			gui.playerFaction = message.faction;
-			gui.playerNumber = message.playerTurn;
+			gui.playerNumber = message.playerNumber;
 			System.out.println("my faction is: " + gui.playerFaction);
 			if ("spy".equals(gui.playerFaction))
 			{
@@ -175,6 +188,12 @@ public class Client implements Runnable
 			}
 			gui.updatePlayerNumber(gui.playerNumber);
 			gui.updateFactionInformation();
+		}
+		else if("gameOver".equals(message.phase))
+		{
+			JFrame frame = new JFrame();
+			JOptionPane.showMessageDialog(frame, "Game over. " + message.winners + " win!");
+			System.exit(1);
 		}
 		else
 		{
@@ -193,7 +212,7 @@ public class Client implements Runnable
 					newText += "Player " + selected + "  ";
 				}
 			}
-			gui.gameMessages.setText(newText);
+			gui.gameMessages.setText(newText + "\n");
 		}
 		if (message.missionResult != null)
 		{

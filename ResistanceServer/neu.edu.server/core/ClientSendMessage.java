@@ -1,6 +1,7 @@
 package core;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 /*
 Created by: Britton Horn
@@ -15,5 +16,18 @@ public class ClientSendMessage implements Serializable
 	// groupSelection, groupApproval, missionVote
 	public String messageType;
 	public String message;
-	public List<Integer> groupSelection;
+	public List<Integer> groupSelection = new ArrayList<Integer>();;
+	
+	public void printMessage()
+	{
+		System.out.println("================================");
+		System.out.println("playerId: " + playerId);
+		System.out.println("messageType: " + messageType);
+		System.out.println("message: " + message);
+		for (Integer selection : groupSelection)
+		{
+			System.out.println("selection: " + selection);
+		}
+		System.out.println("++++++++++++++++++++++++++++++++");
+	}
 }
