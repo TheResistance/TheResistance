@@ -26,9 +26,16 @@ public class tester
             Collections.shuffle(position); 
             List<Bot> bots = new ArrayList<Bot>();
             bots.add(null); 
-            bots.add(new ResistanceAgent(position.get(0)));
-            bots.add(new ResistanceAgent(position.get(1)));
-            bots.add(new ResistanceAgent(position.get(2)));
+            boolean random = false; 
+            if (!random) {
+                bots.add(new ResistanceAgent(position.get(0)));
+                bots.add(new ResistanceAgent(position.get(1)));
+                bots.add(new ResistanceAgent(position.get(2)));
+            } else {
+                bots.add(new RandomResistance(position.get(0))); 
+                bots.add(new RandomResistance(position.get(1))); 
+                bots.add(new RandomResistance(position.get(2))); 
+            }
             bots.add(new RandomSpy(position.get(3))); 
             bots.add(new RandomSpy(position.get(4))); 
                 
