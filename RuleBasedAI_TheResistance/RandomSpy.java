@@ -34,7 +34,7 @@ public class RandomSpy implements Bot
     public boolean sabotage() {
         return true; 
     }
-    public void onMissionComplete(List<Integer> team, boolean result) {
+    public void onMissionComplete(List<Integer> team, List<Boolean> vote, boolean result) {
         return; 
     }
     

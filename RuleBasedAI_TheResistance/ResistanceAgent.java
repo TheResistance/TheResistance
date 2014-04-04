@@ -27,6 +27,10 @@ class PlayerInfo {
         pessimistic = true; 
         optimistic = false; 
     }
+    public void setResistance() {
+        optimistic = true; 
+        resistance = true; 
+    }
     public boolean maybeSpy() {
         return pessimistic; 
     }
@@ -47,6 +51,7 @@ public class ResistanceAgent implements Bot{
     int pessimistic; 
     int self; 
     int voteNo = 0; 
+    int spyCount = 0; 
     ResistanceAgent(int self) {
         this.self = self; 
         optimistic = 5; 
@@ -59,9 +64,14 @@ public class ResistanceAgent implements Bot{
     public int getId() {
         return self; 
     }
-    private void pessimistic() {
-        pessimistic++; 
-        optimistic--; 
+    private void pessimistic(List<PlayerInfo> playerInfos) {
+        pessimistic = 0; 
+        optimistic = 0; 
+        for (PlayerInfo p : playerInfos) {
+            if (p == null) {continue;}
+            optimistic = p.noProofOfSpy() ? optimistic + 1 : optimistic; 
+            pessimistic = p.maybeSpy() ? pessimistic +1 : pessimistic; 
+        }
     }
     private void optimistic() {
         pessimistic--; 
@@ -117,22 +127,43 @@ public class ResistanceAgent implements Bot{
         //Resistance cannot sabotage a mission
         return false; 
     }
-    public void onMissionComplete(List<Integer> team, boolean result) {
+    public void onMissionComplete(List<Integer> team, List<Boolean> vote, boolean result) {
         if (result) { return; }
         int numSpys = 0;
         int spyNum = 0; 
+        if (vote.get(0) == vote.get(1) && team.size() == 2) {
+            playerInfos.get(team.get(0)).setSpy(); 
+            playerInfos.get(team.get(1)).setSpy(); 
+            System.out.println("Agent: " + self + " is absolutely sure " + team + " is a spy"); 
+            spyCount = 2; 
+            pessimistic(playerInfos); 
+        }
         for ( Integer player : team) {
             PlayerInfo p = playerInfos.get(player); 
-            if (!p.isResistance() && !p.isSpy()) {
+            if (!p.isResistance() && !p.maybeSpy()) {
                 spyNum = player; 
                 numSpys++; 
+                System.out.println("Agent: " + self + " infered " + player + " as probable spy");
                 p.setPessimistic(); 
-                pessimistic(); 
+                pessimistic(playerInfos); 
             }
         }
         if (numSpys == 1) {
+            System.out.println("Agent: " + self + " is absolutely sure " + spyNum + " is a spy"); 
             playerInfos.get(spyNum).setSpy(); 
+            spyCount++; 
         }
+        if (spyCount == 2) {
+            for (PlayerInfo p : playerInfos) {
+                if (p == null) {continue;}
+                if (!p.isSpy()) {
+                    p.setResistance(); 
+                }
+            }
+            pessimistic(playerInfos); 
+        }
+        
+                    
       
     }
         

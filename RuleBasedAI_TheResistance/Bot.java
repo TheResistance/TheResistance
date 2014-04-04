@@ -12,6 +12,6 @@ public interface Bot
     public int getId();
     public boolean vote(List<Integer> team); 
     public boolean sabotage(); 
-    public void onMissionComplete(List<Integer> team, boolean result); 
+    public void onMissionComplete(List<Integer> team, List<Boolean> vote, boolean result); 
     
 }

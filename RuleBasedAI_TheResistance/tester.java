@@ -50,15 +50,20 @@ public class tester
                 if (votes < 2) {
                     continue; 
                 }
+                List<Boolean> voters = new ArrayList<Boolean>(); 
                 for (Integer player : team) {
-                    if (bots.get(player).sabotage()) {
-                        lost++;
+                    boolean vote = bots.get(player).sabotage(); 
+                    voters.add(vote); 
+                    if (vote) {
+                        if (result) {
+                            lost++;
+                        }
                         result = false; 
-                        break; 
                     }
                 }    
+                Collections.shuffle(voters); 
                 for (int k = 1; k <= 5; k++ ) {
-                    bots.get(k).onMissionComplete(team,result); 
+                    bots.get(k).onMissionComplete(team,voters,result); 
                 }
                  
                 i++; 
