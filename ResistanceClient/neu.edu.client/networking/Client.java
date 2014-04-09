@@ -212,7 +212,7 @@ public class Client implements Runnable
 					newText += "Player " + selected + "  ";
 				}
 			}
-			gui.gameMessages.setText(newText + "\n");
+			gui.gameMessages.setText(newText);
 		}
 		if (message.missionResult != null)
 		{

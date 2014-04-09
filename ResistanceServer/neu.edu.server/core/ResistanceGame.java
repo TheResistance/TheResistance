@@ -282,7 +282,7 @@ public class ResistanceGame
     		int failCount = 0;
     		for(Integer playerKey : missionApprovalVotes.keySet())
     		{
-    			if ("fail".equals(missionApprovalVotes.get(playerKey)))
+    			if ("reject".equals(missionApprovalVotes.get(playerKey)))
     				failCount++;
     		}
     		ServerSendMessage message = new ServerSendMessage();
@@ -290,13 +290,17 @@ public class ResistanceGame
     		// If there is one fail vote, mission fails. Pass control to next leader.
     		if(failCount >= 1)
     		{
+    			System.out.println("$$$$$$$$$$FAILED MISSION$4444444444444");
+    			System.out.println("new failure count: " + (missionFailures + 1));
+        		message.phase = "groupSelection";
+        		
     			if(missionFailures+1 == 3)
     			{
     				message.phase = "gameOver";
     				message.winners = "Spies";
     				gameOver = true;
     			}
-        		message.phase = "groupSelection";
+
 	    		message.missionResult = "fail";
 	    		message.missionFailVotes = failCount;
 	    		message.groupSize = missionSize[++missionNumber];
@@ -308,6 +312,7 @@ public class ResistanceGame
 	    		message.currentLeader = currentLeader;
     			playerTurn = next;
     			missionApprovalVotes = new Hashtable<Integer,String>();
+    			missionFailures++;
     		}
     		// If no one fails, succeed mission, pass control to person after the current leader
     		else
