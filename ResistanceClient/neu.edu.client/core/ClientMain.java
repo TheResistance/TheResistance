@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import networking.Client;
 import networking.InitializeClientNetwork;
 
 public class ClientMain
@@ -26,6 +27,18 @@ public class ClientMain
 	    
 		InitializeClientNetwork init = new InitializeClientNetwork();
 		init.initialize();
+
+//	    SwingUtilities.invokeLater(new Runnable() 
+//	    {
+//			Client client = new Client(null);
+//            @Override
+//            public void run() 
+//            {
+//            	System.out.println("creating gui");
+//                client.gui = new GameGui(client, 0, "", "");
+//                client.gui.setVisible(true);
+//            }
+//        });
 	}
 }
 

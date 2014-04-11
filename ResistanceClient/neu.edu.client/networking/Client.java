@@ -150,6 +150,16 @@ public class Client implements Runnable
 			System.out.println("group size: " + message.groupSize);
 			gui.createTeamSelectionGui(message.groupSize);
 		}
+		else if("communication".equals(message.phase))
+		{
+			String newText = gui.gameMessages.getText() + "\nCommunication: Player " + 
+					message.playerNumber + " " + message.message + " ";
+			for (Integer selected : message.groupSelection)
+			{
+				newText += "player " + selected + ",  ";
+			}
+			gui.gameMessages.setText(newText);
+		}
 		else if("groupApproval".equals(message.phase))
 		{
 			if (message.playerTurn == gui.playerNumber)

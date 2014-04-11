@@ -13,10 +13,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -47,6 +50,16 @@ public class GameGui extends JFrame
 	public JTextField otherSpyText;
 	public JTextField selectedTeamText;
 	public JTextArea gameMessages;
+	
+	public JRadioButton accuse = new JRadioButton("Accuse");
+	public JRadioButton suggest = new JRadioButton("Group Suggest");
+	public JButton submitCommunication;
+	
+	private JCheckBox player1 = new JCheckBox("Player 1");
+    private JCheckBox player2 = new JCheckBox("Player 2");
+    private JCheckBox player3 = new JCheckBox("Player 3");
+    private JCheckBox player4 = new JCheckBox("Player 4");
+    private JCheckBox player5 = new JCheckBox("Player 5");
 	
 	public String turn = "";
 	public String currentRole = "";
@@ -162,14 +175,61 @@ public class GameGui extends JFrame
 		 * This field has all the game communication.
 		 */
 		gameMessagesLabel = new JLabel("Messages");
-		gameMessagesLabel.setBounds(25, 250, 525, 20);
+		gameMessagesLabel.setBounds(25, 225, 525, 20);
 		
 		myFont = new Font("Sans Serif", Font.PLAIN, 10);
 		gameMessages = new JTextArea();
 		gameMessages.setFont(myFont);
-		gameMessages.setBounds(25, 270, 525, 225);
+		gameMessages.setBounds(25, 245, 525, 125);
 		gameMessages.setEditable(false);
 		
+		/*
+		 * This is for communication methods.
+		 */
+		accuse.setBounds(115, 395, 100, 25);
+		suggest.setBounds(115,420, 125, 25);
+		panel.add(accuse);
+		panel.add(suggest);
+		ButtonGroup commGroup = new ButtonGroup();
+		commGroup.add(accuse);
+		commGroup.add(suggest);
+		
+		CheckBoxList cbList = new CheckBoxList();
+
+	    JCheckBox[] myList = { player1, player2, player3, player4, player5};
+	    cbList.setListData(myList);
+	    cbList.setBounds(250, 375, 75, 100);
+	    panel.add(cbList);
+	    
+		submitCommunication = new JButton("Submit");
+		submitCommunication.setBounds(350, 400, 150, 50);
+		
+		submitCommunication.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent event) 
+			{
+				List<Integer> selections = new ArrayList<Integer>();
+				String commType = new String();
+				if (player1.isSelected())
+					selections.add(1);
+				if (player2.isSelected())
+					selections.add(2);
+				if (player3.isSelected())
+					selections.add(3);
+				if (player4.isSelected())
+					selections.add(4);
+				if (player5.isSelected())
+					selections.add(5);
+				if (accuse.isSelected())
+					commType = "accuses";
+				if (suggest.isSelected())
+					commType = "suggests";
+				if (selections.size() > 0 && commType != null && !"".equals(commType))
+					sendCommunication(commType, selections);
+			}
+		});
+		panel.add(submitCommunication);
 		
 		/*
 		 * Accept and Reject buttons.
@@ -317,6 +377,24 @@ public class GameGui extends JFrame
 			client.out.writeObject(message);
 		}
     	catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
+    
+    public void sendCommunication(String commType, List<Integer> selections)
+    {
+    	ClientSendMessage message = new ClientSendMessage();
+    	message.playerId = playerNumber;
+    	message.messageType = "communication";
+    	message.message = commType;
+    	message.groupSelection = selections;
+    	try
+    	{
+			client.out.writeObject(message);
+		} 
+    	catch (IOException e) 
+    	{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

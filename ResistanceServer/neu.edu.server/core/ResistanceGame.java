@@ -118,7 +118,16 @@ public class ResistanceGame
     public void fromClientMessage(ClientSendMessage message)
     {
     	System.out.println("current turn: " + playerTurn);
-        if (message.playerId == playerTurn)
+    	if ("communication".equals(message.messageType))
+    	{
+    		ServerSendMessage msg = new ServerSendMessage();
+        	msg.playerNumber = message.playerId;
+        	msg.phase = message.messageType;
+        	msg.message = message.message;
+        	msg.groupSelection = message.groupSelection;
+        	sendServerMessage(msg);
+    	}
+    	else if (message.playerId == playerTurn)
         {
         	switch(message.messageType)
         	{
