@@ -1,0 +1,24 @@
+CS4100 
+Final Project 
+
+The Resistance 
+/A Social AI/
+
+Britton Horn
+Elin Carstensdottir
+Kevin Langer
+
+How to run: 
+  We are currently in dev mode and do not have a ex JAR yet. 
+  Easiest way to run is to download eclipse and import the three 
+  Resistance folders as an existing project. Now run ServerMain 
+  then run AgentMain and/or ClientMain a combined five times to 
+  start the game 
+  
+Iteration 1: 
+  Implemented the game engine. So much fun to play!
+Iteration 2: 
+  Implemented the agent API and random agent inside the game engine. 
+    Still bugs to work out. Exposed by agent. 
+  Outside of the game engine start to create a rule based AI. 
+  
