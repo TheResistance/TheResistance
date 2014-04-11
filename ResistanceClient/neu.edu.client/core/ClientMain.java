@@ -36,6 +36,8 @@ public class ClientMain
 //            {
 //            	System.out.println("creating gui");
 //                client.gui = new GameGui(client, 0, "", "");
+//                client.gui.turnRoleText.setText("Vote to approve or reject the group proposal by Player 5");
+//                client.gui.selectedTeamText.setText("Player 1, Player 2, Player 3");
 //                client.gui.setVisible(true);
 //            }
 //        });

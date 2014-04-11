@@ -131,7 +131,7 @@ public class GameGui extends JFrame
 		turnRoleLabel.setBounds(50, 100, 100, 20);
 		
 		turnRoleText = new JTextField(currentRole);
-		turnRoleText.setFont(myFont);
+		turnRoleText.setFont(new Font("Sans Serif", Font.PLAIN, 12));
 		turnRoleText.setBounds(150, 95, 400, 30);
 		turnRoleText.setEditable(false);
 		turnRoleText.setBorder(null);

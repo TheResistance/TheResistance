@@ -136,11 +136,11 @@ public class Client implements Runnable
 
 	private void handleServerMessage(ServerSendMessage message)
 	{
-		message.printMessage();
 		if (gui == null)
 			System.out.println("gui is null");
 		if (message == null)
 			System.out.println("message is null");
+		message.printMessage();
 		gui.isLeader = (message.currentLeader == gui.playerNumber) ? true : false;
 		if("groupSelection".equals(message.phase) && message.playerTurn == gui.playerNumber)
 		{
