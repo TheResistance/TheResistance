@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import rules.Bot;
 import core.ClientSendMessage;
 import networking.Client;
 
 public class AgentLogic {
 	public Client client;
-	
 	
 	public String turn = "";
 	public String currentRole = "";
@@ -26,8 +26,10 @@ public class AgentLogic {
 	public boolean isMissionParticipant = false;
 	public List<Integer> selectedTeam = new ArrayList<Integer>();
 	public String phase;
-	
-	
+	public Bot bot; 
+	public void setBot(Bot bot) {
+		this.bot = bot; 
+	}
 	public AgentLogic(Client c, int player, String faction, String otherSpy) 
     {
 		this(player, faction, otherSpy);
@@ -89,7 +91,6 @@ public class AgentLogic {
 		 * This field has all the game communication.
 		 */
 		
-		
 		/*
 		 * Accept and Reject buttons.
 		 * Run validation on current information before sending to server.
@@ -108,7 +109,12 @@ public class AgentLogic {
 		 */
 		
 		
-		if (playerFaction != "Spy") hideSpyInformation();
+		if (!"Spy".equals(playerFaction)) hideSpyInformation();
+    }
+    public void setCurrentLeader(Integer leader) {
+    	if(leader!=null) {
+    		bot.setLeader(leader);
+    	}
     }
     
     public void createTeamSelectionGui(int choiceCount)
@@ -139,6 +145,7 @@ public class AgentLogic {
     
     public void setCurrentlySelectedTeam(List<Integer> team)
     {
+    
     	if (team.size() > 0)
     	{
 	    	selectedTeam = new ArrayList<Integer>();
@@ -170,21 +177,28 @@ public class AgentLogic {
     	
     }
     public String getGroupApproval() {
-    	return Math.random() < 0.5 ? "accept" : "reject";
+    	//bot.select(team.size());
+    	return bot.vote(selectedTeam) ? "accept" : "reject";
+    	//return Math.random() < 0.5 ? "accept" : "reject";
     }
     public String getMissionVote() {
-    	if ("spy".equals(playerFaction)) {
+    	/*if ("spy".equals(playerFaction)) {
     		System.out.println("I am a spy!");
     		return Math.random() < 0.5 ? "accept" : "reject";
-    	}
-    	return "accept";
+    	}*/
+    	
+    	return bot.sabotage() ? "reject" : "accept";
     }
     public void sendGroupSelection(int groupsize)
-    {
-    	List<Integer> groupMembers = new ArrayList<Integer>(); 
+    {	
+    	
+    	List<Integer> groupMembers = bot.select(groupsize);; 
+    	System.out.println("AI selected "+ groupMembers);
+    	/*
     	for (int i=0; i < groupsize; i++) {
     		groupMembers.add(i+1);
     	}
+    	*/
     	ClientSendMessage message = new ClientSendMessage();
     	message.playerId = playerNumber;
     	message.messageType = "groupSelection";

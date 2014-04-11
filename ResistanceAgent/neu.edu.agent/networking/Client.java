@@ -11,6 +11,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -18,6 +20,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import rules.Bot;
+import rules.RandomResistance;
 import agent.AgentLogic;
 import core.ClientSendMessage;
 import core.ServerSendMessage;
@@ -30,8 +34,8 @@ public class Client implements Runnable
     public Scanner playerInput = new Scanner(System.in);
     public ObjectInputStream in;
     public ObjectOutputStream out;
-    
-    public AgentLogic gui;
+    public Bot bot = null;
+    public AgentLogic agent_logic;
     private Client self = this;
 	
 	public Client(Socket s)
@@ -136,73 +140,77 @@ public class Client implements Runnable
 	private void handleServerMessage(ServerSendMessage message)
 	{
 		message.printMessage();
-		if (gui == null)
+		if (agent_logic == null)
 			System.out.println("gui is null");
 		if (message == null)
 			System.out.println("message is null");
-		gui.isLeader = (message.currentLeader == gui.playerNumber) ? true : false;
-		if("groupSelection".equals(message.phase) && message.playerTurn == gui.playerNumber)
+		//agent_logic.setCurrentLeader(message.currentLeader);
+		agent_logic.isLeader = (message.currentLeader == agent_logic.playerNumber) ? true : false;
+		if("groupSelection".equals(message.phase) && message.playerTurn == agent_logic.playerNumber)
 		{
-			gui.isMissionParticipant = false;
-			gui.setTurnRole("You are the mission leader. Select a group.");
-			gui.phase = "groupSelection";
+			agent_logic.isMissionParticipant = false;
+			agent_logic.setTurnRole("You are the mission leader. Select a group.");
+			agent_logic.phase = "groupSelection";
 			System.out.println("group size: " + message.groupSize);
-			gui.sendGroupSelection(message.groupSize);
+			agent_logic.sendGroupSelection(message.groupSize);
 		}
 		else if("groupApproval".equals(message.phase))
 		{
-			if (message.playerTurn == gui.playerNumber)
+			if (message.playerTurn == agent_logic.playerNumber)
 			{
-				gui.isMissionParticipant = false;
-				gui.phase = "groupApproval";
-				gui.setTurnRole("Vote to approve or reject the group proposal by Player " + message.currentLeader);
-				String vote = gui.getGroupApproval(); 
-				sendServerVote(gui.phase,vote);
+				agent_logic.isMissionParticipant = false;
+				agent_logic.phase = "groupApproval";
+				agent_logic.setTurnRole("Vote to approve or reject the group proposal by Player " + message.currentLeader);
+				String vote = agent_logic.getGroupApproval(); 
+				sendServerVote(agent_logic.phase,vote);
 			}
 			else
 			{
-				gui.isMissionParticipant = false;
-				gui.setTurnRole("Waiting...");
-				gui.updateFactionInformation();
+				agent_logic.isMissionParticipant = false;
+				agent_logic.setTurnRole("Waiting...");
+				agent_logic.updateFactionInformation();
 			}
-			gui.setCurrentlySelectedTeam(message.groupSelection);
+			agent_logic.setCurrentlySelectedTeam(message.groupSelection);
 		}
-		else if("missionVote".equals(message.phase) && message.playerTurn == gui.playerNumber)
+		else if("missionVote".equals(message.phase) && message.playerTurn == agent_logic.playerNumber)
 		{
-			gui.isMissionParticipant = true;
-			gui.phase = "missionVote";
-			gui.setTurnRole("You are in the mission. Vote for the mission to succeed or fail.");
-			String vote = gui.getMissionVote(); 
-			sendServerVote(gui.phase,vote);
+			agent_logic.isMissionParticipant = true;
+			agent_logic.phase = "missionVote";
+			agent_logic.setTurnRole("You are in the mission. Vote for the mission to succeed or fail.");
+			String vote = agent_logic.getMissionVote(); 
+			sendServerVote(agent_logic.phase,vote);
 		}
 		else if("assignment".equals(message.phase))
 		{
 			System.out.println("assignment phase");
-			gui.phase = "assignment";
-			gui.playerFaction = message.faction;
-			gui.playerNumber = message.playerNumber;
-			System.out.println("my faction is: " + gui.playerFaction);
-			if ("spy".equals(gui.playerFaction))
+			agent_logic.phase = "assignment";
+			agent_logic.playerFaction = message.faction;
+			agent_logic.playerNumber = message.playerNumber;
+			bot = new RandomResistance(agent_logic.playerNumber);
+			agent_logic.setBot(bot);
+			System.out.println("my faction is: " + agent_logic.playerFaction);
+			if ("spy".equals(agent_logic.playerFaction))
 			{
 				System.out.println("I am a spy");
 				//gui.otherSpyText.setText("Player " + message.otherSpy);
-				gui.showSpyInformation();
+				agent_logic.showSpyInformation();
 			}
-			gui.updatePlayerNumber(gui.playerNumber);
-			gui.updateFactionInformation();
+			agent_logic.updatePlayerNumber(agent_logic.playerNumber);
+			agent_logic.updateFactionInformation();
 		}
 		else if("gameOver".equals(message.phase))
 		{
-			JFrame frame = new JFrame();
-			JOptionPane.showMessageDialog(frame, "Game over. " + message.winners + " win!");
+			//JFrame frame = new JFrame();
+			//JOptionPane.showMessageDialog(frame, "Game over. " + message.winners + " win!");
 			System.exit(1);
 		}
 		else
 		{
-			gui.isMissionParticipant = false;
-			gui.setTurnRole("Waiting...");
-			gui.updateFactionInformation();
+			agent_logic.isMissionParticipant = false;
+			agent_logic.setTurnRole("Waiting...");
+			agent_logic.updateFactionInformation();
 		}
+		List<Integer> cur_selection = null;
 		if (message.groupSelectionResult != null)
 		{
 			//String newText = gui.gameMessages.getText() + "\nGroup Selection Result: " + message.groupSelectionResult;
@@ -213,17 +221,30 @@ public class Client implements Runnable
 				{
 					newText += "Player " + selected + "  ";
 				}
+				cur_selection = message.groupSelection; 
 			}
 			//gui.gameMessages.setText(newText + "\n");
 		}
 		if (message.missionResult != null)
 		{
 			String newText = ""; 
+			boolean sucess = true;
+			List<Boolean> votes = new ArrayList<Boolean>();
 			//String newText = gui.gameMessages.getText() + "\nMission Vote Result: " + message.missionResult;
 			if ("fail".equals(message.groupSelectionResult))
 			{
+				sucess = false; 
 				newText += ". Number of fail votes: " + message.missionFailVotes;
+				
+				for (int i = 0; i < 5; i++){
+					if ( i < message.missionFailVotes) {
+						votes.add(true);
+					} else {
+						votes.add(false);
+					}
+				}
 			}
+			bot.onMissionComplete(cur_selection,votes,sucess);
 			//gui.gameMessages.setText(newText);
 		}
 	}
@@ -231,7 +252,7 @@ public class Client implements Runnable
 	public void sendServerVote(String phase, String vote)
 	{
 		ClientSendMessage message = new ClientSendMessage();
-		message.playerId = gui.playerNumber;
+		message.playerId = agent_logic.playerNumber;
 		message.messageType = phase;
 		message.message = vote;
 		try

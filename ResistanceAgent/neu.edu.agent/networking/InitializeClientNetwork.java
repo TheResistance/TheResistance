@@ -31,7 +31,7 @@ public class InitializeClientNetwork
             
             client = new Client(s);
             System.out.println("creating gui");
-            client.gui = new AgentLogic(client, 0, "", "");
+            client.agent_logic = new AgentLogic(client, 0, "", "");
     	    
             client.createStreams();
             Thread c = new Thread(client);
