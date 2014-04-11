@@ -283,7 +283,7 @@ public class GameGui extends JFrame
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(EXIT_ON_CLOSE); 
 		
-		if (playerFaction != "Spy") hideSpyInformation();
+		if ( !"Spy".equals(playerFaction)) hideSpyInformation();
     }
     
     public void createTeamSelectionGui(int choiceCount)
