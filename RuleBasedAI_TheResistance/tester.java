@@ -72,12 +72,12 @@ public class tester
                 for (int k = 1; k <= 5; k++ ) {
                     bots.get(k).onMissionComplete(team,voters,result); 
                 }
-                 
+                if (lost >= 3) {
+                    lostTally++;
+                    break;
+                } 
                 i++; 
                  
-            }
-            if (lost > 3) {
-                lostTally++;
             }
             rounds++;
         }

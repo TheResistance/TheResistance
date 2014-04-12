@@ -62,12 +62,10 @@ public class tester
                 if (votes < 2) {
                     continue;
                 }
-                Hashtable<Integer, String> voters = new Hashtable<Integer,String>();
                 for (int k = 1; k <= 5; k++ ) {
                     int id = bots.get(k).getId(); 
                     if(team.contains(id)) {
                         boolean vote = bots.get(k).sabotage(); 
-                        voters.put(bots.get(k).getId(), vote ? "reject" : "accept"); 
                         if (vote) {
                             if (result) {  
                                 lost++;
@@ -80,28 +78,15 @@ public class tester
                 if (result) {
                     System.out.println("won a round"); 
                 }
-                /*
-                for (Integer player : team) {
-                    boolean vote = bots.get(player).sabotage(); 
-                    voters.add(vote); 
-                    if (vote) {
-                        if (result) {
-                            lost++;
-                        }
-                        result = false; 
-                    }
-                }  */  
-
-
                 String message = "";
                 
                 for (int k = 1; k <= 5; k++ ) {
-                    bots.get(k).onMissionComplete(team,voters,result); 
-                    message += bots.get(k).sendMessage();
+                    bots.get(k).onMissionComplete(team,lost); 
+                    //message += bots.get(k).sendMessage();
                 }
                 for (int k = 1; k <= 5; k++) {
                     System.out.print(message);
-                    bots.get(k).getMessage(message);
+                    //bots.get(k).getMessage(message);
                 }
                 i++; 
             }
