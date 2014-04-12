@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner; 
 
+import core.ClientSendMessage;
 import core.ServerSendMessage;
 public class ExpertStatsAgent implements Bot{
     private List<PlayerInfo> playerInfos = new ArrayList<PlayerInfo>(6);
@@ -215,17 +216,34 @@ public class ExpertStatsAgent implements Bot{
         }
 
     }
-    public String sendMessage() {
-        String rt = ""; 
-        for (PlayerInfo p : playerInfos) {
-            if (p != null && p.isSpy()) {
-                rt += self + " accusal " + p.getId() + "\n";
+    public ClientSendMessage sendMessage(boolean isAccusal) 
+    {
+    	ClientSendMessage message = new ClientSendMessage();
+    	List<Integer> otherPlayers = new ArrayList<Integer>();
+    	
+        for (PlayerInfo p : playerInfos) 
+        {
+            if (p != null) 
+            {
+            	if (p.isSpy() && isAccusal)
+            	{
+            		otherPlayers.add(p.getId());
+            	}
+            	if (!isAccusal && p.isResistance())
+            	{
+            		otherPlayers.add(p.getId());
+            	}
             }
+            
         }
-        rt += self + " suggestions " + self + "\n";
-        //rt += denial; 
-        denial = ""; 
-        return rt; 
+        if (otherPlayers.size() > 0)
+        {
+        	message.playerId = self;
+        	message.messageType = "communication";
+        	message.message = isAccusal ? "accuses" : "suggests";
+        	message.groupSelection = otherPlayers;
+        }
+        return message; 
     }
     
 

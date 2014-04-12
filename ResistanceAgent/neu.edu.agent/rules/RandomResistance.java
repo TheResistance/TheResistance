@@ -4,6 +4,7 @@ import java.util.Hashtable;
 import java.util.List; 
 import java.util.ArrayList; 
 
+import core.ClientSendMessage;
 import core.ServerSendMessage;
 /**
  * Write a description of class RandomSpy here.
@@ -46,8 +47,8 @@ public class RandomResistance implements Bot
     public void getMessage(ServerSendMessage msg) {
         
     }
-    public String sendMessage() {
-        return "";
+    public ClientSendMessage sendMessage(boolean isAccusal) {
+        return null;
     }
     
 }

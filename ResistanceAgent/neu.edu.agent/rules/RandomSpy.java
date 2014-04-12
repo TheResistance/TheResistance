@@ -3,6 +3,7 @@ import java.util.Hashtable;
 import java.util.List; 
 import java.util.ArrayList; 
 
+import core.ClientSendMessage;
 import core.ServerSendMessage;
 
 /**
@@ -46,7 +47,7 @@ public class RandomSpy implements Bot
     public void getMessage(ServerSendMessage msg) {
         
     }
-    public String sendMessage() {
-        return "";
+    public ClientSendMessage sendMessage(boolean isAccusal) {
+        return null;
     }
 }

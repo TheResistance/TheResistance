@@ -2,6 +2,7 @@ package rules;
 import java.util.Hashtable;
 import java.util.List; 
 
+import core.ClientSendMessage;
 import core.ServerSendMessage;
  
 
@@ -20,6 +21,6 @@ public interface Bot
     public boolean sabotage(); 
     public void onMissionComplete(List<Integer> team, int missionFailVotes); 
     public void getMessage(ServerSendMessage message);
-    public String sendMessage(); 
+    public ClientSendMessage sendMessage(boolean isAccusal); 
     
 }
