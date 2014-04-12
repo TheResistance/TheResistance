@@ -23,7 +23,7 @@ public class tester
         for (int i = 1; i <= 5; i++) {
             position.add(i); 
         }
-            
+        int lostGames = 0;
         for (int count = 0; count < 1000; count++) {
             Collections.shuffle(position); 
             List<Bot> bots = new ArrayList<Bot>();
@@ -42,11 +42,13 @@ public class tester
             bots.add(new RandomSpy(position.get(4))); 
               
             int i = 0; 
-            lost = 0; 
+            lost = 0;
+            lostTally = 0;
+            int leaderChanges = 0;
             while (i < 5) {
                 System.out.println("Spies: " + position.get(3) + " " + position.get(4)); 
                 result = true; 
-                List<Integer> team = bots.get(leader).select(missionSize[i%5]); 
+                List<Integer> team = bots.get(leader).select(missionSize[i]); 
                 votes = 0; 
                 for (int j = 1; j <= 5; j++) {
                     if (j!=leader && bots.get(j).vote(team)) {
@@ -56,19 +58,24 @@ public class tester
                 }
                 
                 leader++; 
-                if (leader >= 5) {
+                if (leader > 5) {
                     leader = 1; 
                 }
-                if (votes < 2) {
-                    continue;
+                if (votes <= 2) {
+                	leaderChanges++;
+                	if (leaderChanges < 5)
+                	{
+                		continue;
+                	}
                 }
                 for (int k = 1; k <= 5; k++ ) {
                     int id = bots.get(k).getId(); 
                     if(team.contains(id)) {
                         boolean vote = bots.get(k).sabotage(); 
                         if (vote) {
+                        	lost++;
                             if (result) {  
-                                lost++;
+                                
                                 System.out.println("lost a round"); 
                             }
                             result = false;
@@ -78,6 +85,8 @@ public class tester
                 if (result) {
                     System.out.println("won a round"); 
                 }
+                else
+                	lostTally++;
                 String message = "";
                 
                 for (int k = 1; k <= 5; k++ ) {
@@ -90,12 +99,10 @@ public class tester
                 }
                 i++; 
             }
-            if (lost >= 3) {
-                lostTally++;
-            }
             rounds++;
-            
+            if (lostTally >= 3)
+            	lostGames++;
         }
-        System.out.println("Players " + rounds + " won: % " + (100*(rounds-lostTally))/((double) rounds)); 
+        System.out.println("Players " + rounds + " won: % " + (100*(rounds-lostGames))/((double) rounds)); 
     }
 }

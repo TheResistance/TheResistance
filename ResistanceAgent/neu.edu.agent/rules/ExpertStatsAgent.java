@@ -8,24 +8,16 @@ import java.util.Scanner;
 import core.ClientSendMessage;
 import core.ServerSendMessage;
 public class ExpertStatsAgent implements Bot{
-    private List<PlayerInfo> playerInfos = new ArrayList<PlayerInfo>(6);
-    int optimistic; 
-    int pessimistic; 
+    private List<PlayerInfo> playerInfos = new ArrayList<PlayerInfo>(6); 
     int self; 
     int voteNo = 0; 
-    int spyCount = 0; 
-    private String denial = ""; 
-    private MentalModel neurosis;
     private int leader; 
     private double threshold = .6;
     
     
     public ExpertStatsAgent(int self) {
-        neurosis = new MentalModel(4,threshold);
         System.out.println(self); 
-        this.self = self; 
-        optimistic = 5; 
-        pessimistic = 0; 
+        this.self = self;  
         playerInfos.add(null); 
         for (int i = 1; i <= 5; i++) {
             playerInfos.add(new PlayerInfo(i,i==self));
@@ -36,19 +28,6 @@ public class ExpertStatsAgent implements Bot{
     }
     public void setLeader(int leader) {
         this.leader = leader;
-    }
-    private void pessimistic(List<PlayerInfo> playerInfos) {
-        pessimistic = 0; 
-        optimistic = 0; 
-        for (PlayerInfo p : playerInfos) {
-            if (p == null) {continue;}
-            optimistic = p.noProofOfSpy() ? optimistic + 1 : optimistic; 
-            pessimistic = p.maybeSpy() ? pessimistic +1 : pessimistic; 
-        }
-    }
-    private void optimistic() {
-        pessimistic--; 
-        optimistic++; 
     }
     /* 
      * Rule based system:
@@ -61,28 +40,14 @@ public class ExpertStatsAgent implements Bot{
         System.out.println("adding " + self); 
         mission.add(self); 
         missionSize--; 
-        if(optimistic > 1) {
-            for (PlayerInfo p : playerInfos) {
-                if (p == null){ continue; }
-                if (p.noProofOfSpy() && !mission.contains(p.number) && missionSize > 0) {
-                    mission.add(p.number); 
-                    missionSize--; 
-                }
-            }
-        }
         int counter = 1; 
         Collections.sort(playerInfos); 
+        System.out.println("sorted probs for player " + self + ": " + playerInfos.toString());
         
         while (missionSize > 0) {
             int id = playerInfos.get(counter).getId(); 
-            if ( mission.contains(id) ) {}
-            else if (!playerInfos.get(id).maybeSpy()) {
-                missionSize--; 
-                mission.add(id); 
-            } else if (mission.size() + pessimistic >= 5 ) {
-                missionSize--; 
-                mission.add(id);
-            }
+            mission.add(id);
+            missionSize--;
             counter++ ;
             if (counter > 5) {
                 counter = 1; 
@@ -92,16 +57,9 @@ public class ExpertStatsAgent implements Bot{
     }
     public boolean vote(List<Integer> team) {
         for (Integer player : team) {
-            if (voteNo < 4 && playerInfos.get(player).getProbability() > Math.random()) {
-                return true; 
-            }
-            if (playerInfos.get(player).maybeSpy() && voteNo < 4) {
-                voteNo++;
-                return false; 
-            }
-           
+        	if (playerInfos.get(player).resistanceChance() < threshold)
+        		return false;
         }
-        voteNo = 0; 
         return true; 
     }
     public boolean sabotage() {
@@ -110,9 +68,10 @@ public class ExpertStatsAgent implements Bot{
     }
     public void onMissionComplete(List<Integer> team, int failVotes) {
         System.out.println(team); 
-        
-        int numSpys = 0;
-        int spyNum = 0; 
+        if (failVotes == 0)
+        {
+        	return;
+        }
 
         boolean self_c = false; 
         if (team.contains(self)) {
@@ -125,31 +84,27 @@ public class ExpertStatsAgent implements Bot{
         if (failVotes == 2 && team.size() == 2) {
             playerInfos.get(team.get(0)).setSpy(); 
             playerInfos.get(team.get(1)).setSpy(); 
-            System.out.println("Agent: " + self + " is absolutely sure " + team + " is a spy"); 
-            spyCount = 2; 
-            pessimistic(playerInfos); 
+            System.out.println("Agent: " + self + " is ABSOLUTELY sure " + team + " is a spy"); 
         }
 
         for ( Integer player : team) {
-            PlayerInfo p = playerInfos.get(player); 
-            if (!p.isResistance() && !p.maybeSpy()) {
-                spyNum = player; 
-                numSpys++; 
-                System.out.println("Agent: " + self + " infered " + player + " as probable spy");
-                p.setPessimistic(); 
-                pessimistic(playerInfos); 
-            }
+        	if (playerInfos.get(player).getId() != self)
+        	{
+        		playerInfos.get(player).factualProbability *= .8;
+        	}
         }
         if (!team.contains(leader)) {
             System.out.println("Suspicious activity by " + leader); 
-            PlayerInfo p = playerInfos.get(leader);
-            p.setPessimistic(); 
-            pessimistic(playerInfos); 
+            playerInfos.get(leader).factualProbability *= .9;
         }
-        if (numSpys == 1) {
-            System.out.println("Agent: " + self + " is absolutely sure " + spyNum + " is a spy"); 
-            playerInfos.get(spyNum).setSpy(); 
-            spyCount++; 
+        if (team.contains(self) && failVotes == team.size() - 1) {
+            for ( Integer player : team) {
+            	if (playerInfos.get(player).getId() != self)
+            	{
+                    playerInfos.get(player).setSpy();
+                    System.out.println("Agent: " + self + " is absolutely sure " + playerInfos.get(player).getId() + " is a spy"); 
+            	}
+            }
         }
        
         if (self_c) {
@@ -176,11 +131,11 @@ public class ExpertStatsAgent implements Bot{
 			            {
 			            	if (playerInfos.get(player).getProbability() > threshold)
 			            	{
-			            		playerInfos.get(other_player).updateResistanceProbability(.8);
+			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(.8);
 			            	}
 			            	else if (playerInfos.get(player).getProbability() < 1-threshold)
 			            	{
-			            		playerInfos.get(other_player).updateResistanceProbability(1.2);
+			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(1.2);
 			            	}
 			            	else
 			            	{
@@ -191,11 +146,11 @@ public class ExpertStatsAgent implements Bot{
 			            {			                
 			            	if (playerInfos.get(player).getProbability() > threshold)
 			            	{
-			            		playerInfos.get(other_player).updateResistanceProbability(1.2);
+			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(1.2);
 			            	}
 			            	else if (playerInfos.get(player).getProbability() < 1-threshold)
 			            	{
-			            		playerInfos.get(other_player).updateResistanceProbability(.8);
+			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(.8);
 			            	}
 			            	else
 			            	{
