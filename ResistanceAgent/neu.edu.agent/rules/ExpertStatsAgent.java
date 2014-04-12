@@ -107,7 +107,7 @@ public class ExpertStatsAgent implements Bot{
         //Resistance cannot sabotage a mission
         return false; 
     }
-    public void onMissionComplete(List<Integer> team, Hashtable<Integer, String> vote, int failVotes) {
+    public void onMissionComplete(List<Integer> team, int failVotes) {
         System.out.println(team); 
         
         int numSpys = 0;

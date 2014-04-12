@@ -233,7 +233,7 @@ public class Client implements Runnable
 		}
 		if (message.missionResult != null)
 		{
-			bot.onMissionComplete(message.groupSelection,message.playerVotes,message.missionFailVotes);
+			bot.onMissionComplete(message.groupSelection, message.missionFailVotes);
 			//gui.gameMessages.setText(newText);
 		}
 	}

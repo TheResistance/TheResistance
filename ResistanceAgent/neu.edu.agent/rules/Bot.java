@@ -18,7 +18,7 @@ public interface Bot
     public int getId();
     public boolean vote(List<Integer> team); 
     public boolean sabotage(); 
-    public void onMissionComplete(List<Integer> team, Hashtable<Integer, String> playerVotes, int missionFailVotes); 
+    public void onMissionComplete(List<Integer> team, int missionFailVotes); 
     public void getMessage(ServerSendMessage message);
     public String sendMessage(); 
     

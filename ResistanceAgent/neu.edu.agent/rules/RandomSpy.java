@@ -40,7 +40,7 @@ public class RandomSpy implements Bot
     public boolean sabotage() {
         return true; 
     }
-    public void onMissionComplete(List<Integer> team, Hashtable<Integer, String> vote, int failVotes) {
+    public void onMissionComplete(List<Integer> team, int failVotes) {
         return; 
     }
     public void getMessage(ServerSendMessage msg) {
