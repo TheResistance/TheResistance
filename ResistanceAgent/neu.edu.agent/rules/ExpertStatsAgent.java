@@ -1,8 +1,11 @@
 package rules;
+import java.util.Hashtable;
 import java.util.List; 
 import java.util.ArrayList; 
 import java.util.Collections;
 import java.util.Scanner; 
+
+import core.ServerSendMessage;
 public class ExpertStatsAgent implements Bot{
     private List<PlayerInfo> playerInfos = new ArrayList<PlayerInfo>(6);
     int optimistic; 
@@ -13,8 +16,11 @@ public class ExpertStatsAgent implements Bot{
     private String denial = ""; 
     private MentalModel neurosis;
     private int leader; 
-    ExpertStatsAgent(int self) {
-        neurosis = new MentalModel(4,.4);
+    private double threshold = .6;
+    
+    
+    public ExpertStatsAgent(int self) {
+        neurosis = new MentalModel(4,threshold);
         System.out.println(self); 
         this.self = self; 
         optimistic = 5; 
@@ -101,13 +107,12 @@ public class ExpertStatsAgent implements Bot{
         //Resistance cannot sabotage a mission
         return false; 
     }
-    public void onMissionComplete(List<Integer> team, List<Boolean> vote, boolean result) {
+    public void onMissionComplete(List<Integer> team, Hashtable<Integer, String> vote, int failVotes) {
         System.out.println(team); 
-        if (result) { 
-            return; }
+        
         int numSpys = 0;
         int spyNum = 0; 
-        int votecount = 0; 
+
         boolean self_c = false; 
         if (team.contains(self)) {
             self_c = true;
@@ -115,11 +120,8 @@ public class ExpertStatsAgent implements Bot{
         }
         //playerInfos.get(self).setResistance(); 
 
-        for (Boolean v : vote) {
-            if (v) { votecount++; }
-        }
         //System.out.println(playerInfos); 
-        if (votecount == 2 && team.size() == 2) {
+        if (failVotes == 2 && team.size() == 2) {
             playerInfos.get(team.get(0)).setSpy(); 
             playerInfos.get(team.get(1)).setSpy(); 
             System.out.println("Agent: " + self + " is absolutely sure " + team + " is a spy"); 
@@ -155,47 +157,61 @@ public class ExpertStatsAgent implements Bot{
                     
       
     }
-    public void getMessage(String msgs) {
-        Scanner scanner = new Scanner(msgs);
-        Scanner keyboard = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-        String[] tokens = scanner.nextLine().split(" ");  
+    public void getMessage(ServerSendMessage msgs) {
         try {
-            int player = Integer.parseInt(tokens[0]); 
-            String msg = tokens[1]; 
-            int other_player = Integer.parseInt(tokens[2]);
-            double X = playerInfos.get(player).getProbability(); 
-            double Y = playerInfos.get(other_player).getProbability(); 
-           
-            //System.out.println(X + " " +Y); 
-            neurosis.setX(X);
-            neurosis.setY(Y); 
-            if (msg.equals("accusal")) {
-                if (other_player  == self) 
-                    denial += self + " denial " + player + "\n"; 
-                if ( player == self || other_player == self) continue;
-                  neurosis.accuses(); 
-                  X = .5; 
-                  Y = .5; 
-                  playerInfos.get(player).reduce_suspect(X);
-                  playerInfos.get(other_player).suspect(Y);
-            }
-            if (msg.equals("denial")) {
-                neurosis.denials();
-            }
-            if (msg.equals("suggestions")) {
-                neurosis.suggestions(); 
-                X = 1; 
-                Y = 1; 
-                
-                playerInfos.get(player).reduce_suspect(X);
-                playerInfos.get(other_player).reduce_suspect(Y);
-            }
-            //X = neurosis.getX();
-            //Y = neurosis.getY(); 
-          
-            //System.out.println(X + " " +Y); 
-        } catch (NumberFormatException E){ }
+            int player = msgs.playerNumber; 
+            String msg = msgs.message; 
+            List<Integer> other_players = msgs.groupSelection;
+            
+            if (player != self)
+            {
+            	for (Integer other_player : other_players)
+            	{
+            		if (other_player != self)
+            		{			           
+			            //System.out.println(X + " " +Y); 
+ 
+			            if (msg.equals("accusal")) 
+			            {
+			            	if (playerInfos.get(player).getProbability() > threshold)
+			            	{
+			            		playerInfos.get(other_player).updateResistanceProbability(.8);
+			            	}
+			            	else if (playerInfos.get(player).getProbability() < 1-threshold)
+			            	{
+			            		playerInfos.get(other_player).updateResistanceProbability(1.2);
+			            	}
+			            	else
+			            	{
+			            		
+			            	}
+			            }
+			            if (msg.equals("suggestions")) 
+			            {			                
+			            	if (playerInfos.get(player).getProbability() > threshold)
+			            	{
+			            		playerInfos.get(other_player).updateResistanceProbability(1.2);
+			            	}
+			            	else if (playerInfos.get(player).getProbability() < 1-threshold)
+			            	{
+			            		playerInfos.get(other_player).updateResistanceProbability(.8);
+			            	}
+			            	else
+			            	{
+			            		
+			            	}
+			            }
+			            //X = neurosis.getX();
+			            //Y = neurosis.getY(); 
+			          
+			            //System.out.println(X + " " +Y); 
+            		}
+            	}
+	        }
+        } 
+        catch (NumberFormatException e)
+        {
+        	e.printStackTrace();
         }
 
     }

@@ -1,5 +1,8 @@
 package rules;
+import java.util.Hashtable;
 import java.util.List; 
+
+import core.ServerSendMessage;
  
 
 /**
@@ -15,8 +18,8 @@ public interface Bot
     public int getId();
     public boolean vote(List<Integer> team); 
     public boolean sabotage(); 
-    public void onMissionComplete(List<Integer> team, List<Boolean> vote, boolean result); 
-    public void getMessage(String msg);
+    public void onMissionComplete(List<Integer> team, Hashtable<Integer, String> playerVotes, int missionFailVotes); 
+    public void getMessage(ServerSendMessage message);
     public String sendMessage(); 
     
 }

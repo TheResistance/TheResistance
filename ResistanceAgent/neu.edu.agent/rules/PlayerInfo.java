@@ -8,7 +8,7 @@ class PlayerInfo implements Comparable<PlayerInfo>{
     private boolean optimistic; 
     private boolean pessimistic; 
     
-    PlayerInfo(int number,boolean self) {
+    public PlayerInfo(int number,boolean self) {
         
         probablity = .5; 
         this.self = self; 
@@ -39,20 +39,9 @@ class PlayerInfo implements Comparable<PlayerInfo>{
         optimistic = true; 
         resistance = true; 
     }
-    public void suspect() {
-        suspect(0.1);
-    }
-    public void suspect(double value) {
-        if (probablity == 0) return;
-        probablity -= value; 
-        if (probablity < 0)   probablity = .01; 
-    }
-    public void reduce_suspect() {
-        reduce_suspect(0.1);
-    }
-    public void reduce_suspect(double value) {
+    public void updateResistanceProbability(double value) {
         if (probablity == 1) return;
-        probablity += value; 
+        probablity *= value; 
         if (probablity > 1)   probablity = .99; 
     }
     public boolean maybeSpy() {
@@ -71,9 +60,9 @@ class PlayerInfo implements Comparable<PlayerInfo>{
         return probablity;
     }
     public int compareTo(PlayerInfo p) {
-        if (p == null) return 1;  
-        if (getProbability() < p.getProbability()) return 1;
+        if (p == null) return 1;
         if (Math.abs(getProbability()-p.getProbability()) < 0.0001) return 0; 
+        if (getProbability() < p.getProbability()) return 1;
         return -1;
     }
     public String toString() {

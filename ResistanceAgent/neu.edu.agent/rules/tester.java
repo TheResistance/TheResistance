@@ -62,12 +62,12 @@ public class tester
                 if (votes < 2) {
                     continue;
                 }
-                List<Boolean> voters = new ArrayList<Boolean>(); 
+                Hashtable<Integer, String> voters = new Hashtable<Integer,String>();
                 for (int k = 1; k <= 5; k++ ) {
                     int id = bots.get(k).getId(); 
                     if(team.contains(id)) {
                         boolean vote = bots.get(k).sabotage(); 
-                        voters.add(vote); 
+                        voters.put(bots.get(k).getId(), vote ? "reject" : "accept"); 
                         if (vote) {
                             if (result) {  
                                 lost++;
@@ -92,7 +92,7 @@ public class tester
                     }
                 }  */  
 
-                Collections.shuffle(voters); 
+
                 String message = "";
                 
                 for (int k = 1; k <= 5; k++ ) {

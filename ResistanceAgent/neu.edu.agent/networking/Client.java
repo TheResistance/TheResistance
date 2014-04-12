@@ -21,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import rules.Bot;
+import rules.ExpertStatsAgent;
 import rules.RandomResistance;
 import agent.AgentLogic;
 import core.ClientSendMessage;
@@ -139,13 +140,14 @@ public class Client implements Runnable
 
 	private void handleServerMessage(ServerSendMessage message)
 	{
-		message.printMessage();
 		if (agent_logic == null)
 			System.out.println("gui is null");
 		if (message == null)
 			System.out.println("message is null");
+		message.printMessage();
 		//agent_logic.setCurrentLeader(message.currentLeader);
 		agent_logic.isLeader = (message.currentLeader == agent_logic.playerNumber) ? true : false;
+		
 		if("groupSelection".equals(message.phase) && message.playerTurn == agent_logic.playerNumber)
 		{
 			agent_logic.isMissionParticipant = false;
@@ -153,6 +155,10 @@ public class Client implements Runnable
 			agent_logic.phase = "groupSelection";
 			System.out.println("group size: " + message.groupSize);
 			agent_logic.sendGroupSelection(message.groupSize);
+		}
+		else if("communication".equals(message.phase))
+		{
+			bot.getMessage(message);
 		}
 		else if("groupApproval".equals(message.phase))
 		{
@@ -186,7 +192,7 @@ public class Client implements Runnable
 			agent_logic.phase = "assignment";
 			agent_logic.playerFaction = message.faction;
 			agent_logic.playerNumber = message.playerNumber;
-			bot = new RandomResistance(agent_logic.playerNumber);
+			bot = new ExpertStatsAgent(agent_logic.playerNumber);
 			agent_logic.setBot(bot);
 			System.out.println("my faction is: " + agent_logic.playerFaction);
 			if ("spy".equals(agent_logic.playerFaction))
@@ -227,24 +233,7 @@ public class Client implements Runnable
 		}
 		if (message.missionResult != null)
 		{
-			String newText = ""; 
-			boolean sucess = true;
-			List<Boolean> votes = new ArrayList<Boolean>();
-			//String newText = gui.gameMessages.getText() + "\nMission Vote Result: " + message.missionResult;
-			if ("fail".equals(message.groupSelectionResult))
-			{
-				sucess = false; 
-				newText += ". Number of fail votes: " + message.missionFailVotes;
-				
-				for (int i = 0; i < 5; i++){
-					if ( i < message.missionFailVotes) {
-						votes.add(true);
-					} else {
-						votes.add(false);
-					}
-				}
-			}
-			bot.onMissionComplete(cur_selection,votes,sucess);
+			bot.onMissionComplete(message.groupSelection,message.playerVotes,message.missionFailVotes);
 			//gui.gameMessages.setText(newText);
 		}
 	}

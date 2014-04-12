@@ -1,6 +1,9 @@
 package rules;
+import java.util.Hashtable;
 import java.util.List; 
 import java.util.ArrayList; 
+
+import core.ServerSendMessage;
 
 /**
  * Write a description of class RandomSpy here.
@@ -37,10 +40,10 @@ public class RandomSpy implements Bot
     public boolean sabotage() {
         return true; 
     }
-    public void onMissionComplete(List<Integer> team, List<Boolean> vote, boolean result) {
+    public void onMissionComplete(List<Integer> team, Hashtable<Integer, String> vote, int failVotes) {
         return; 
     }
-    public void getMessage(String msg) {
+    public void getMessage(ServerSendMessage msg) {
         
     }
     public String sendMessage() {
