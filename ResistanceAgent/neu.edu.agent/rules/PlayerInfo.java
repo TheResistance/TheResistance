@@ -4,6 +4,7 @@ class PlayerInfo implements Comparable<PlayerInfo>{
     boolean self; 
     double probability;
     double factualProbability = 1.0;
+    double successProbability = 0; 
     private boolean resistance; 
     private boolean spy;  
     
@@ -28,6 +29,11 @@ class PlayerInfo implements Comparable<PlayerInfo>{
     public void setResistance() { 
         factualProbability = 1.0f;  
         resistance = true; 
+    }
+    public void updateSuccessProbability(double value) {
+    	successProbability += value; 
+    	if (successProbability > 1.0)
+    		successProbability = 1; 
     }
     public void updateResistanceProbabilityFromCommunication(double value) {
         if (probability == 1.0) return;

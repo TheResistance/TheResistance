@@ -85,9 +85,10 @@ public class ExpertStatsAgent implements Bot{
         System.out.println(team + " failed " + failVotes + " times."); 
         if (failVotes == 0)
         {
+        	for (Integer player : team)
+        		playerInfos.get(player).updateSuccessProbability(.2);
         	return;
         }
-
         boolean self_c = false; 
         if (team.contains(self)) {
             self_c = true;

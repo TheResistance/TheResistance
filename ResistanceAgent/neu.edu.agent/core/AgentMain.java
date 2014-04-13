@@ -17,8 +17,6 @@ import networking.InitializeClientNetwork;
 
 public class AgentMain
 {
-
-	
 	public static void main(String[] args) throws IOException
 	{
 	    
