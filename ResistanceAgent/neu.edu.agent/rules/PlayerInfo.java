@@ -51,8 +51,8 @@ class PlayerInfo implements Comparable<PlayerInfo>{
     public int compareTo(PlayerInfo p) {
         if (p == null) return 1;
         if (Math.abs(resistanceChance()-p.resistanceChance()) < 0.0001) return 0; 
-        if (resistanceChance() < p.resistanceChance()) return -1;
-        return 1;
+        if (resistanceChance() < p.resistanceChance()) return 1;
+        return -1;
     }
     public String toString() {
         return("Player: " + number + " " + resistanceChance()); 

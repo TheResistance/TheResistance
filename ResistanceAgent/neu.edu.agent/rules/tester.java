@@ -42,7 +42,7 @@ public class tester
             bots.add(new RandomSpy(position.get(4))); 
               
             int i = 0; 
-            lost = 0;
+
             lostTally = 0;
             int leaderChanges = 0;
             while (i < 5) {
@@ -68,6 +68,7 @@ public class tester
                 		continue;
                 	}
                 }
+                lost = 0;
                 for (int k = 1; k <= 5; k++ ) {
                     int id = bots.get(k).getId(); 
                     if(team.contains(id)) {
