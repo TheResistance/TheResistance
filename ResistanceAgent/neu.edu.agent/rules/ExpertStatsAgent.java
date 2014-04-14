@@ -1,14 +1,16 @@
 package rules;
-import java.util.Hashtable;
-import java.util.List; 
-import java.util.ArrayList; 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner; 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import core.ClientSendMessage;
 import core.ServerSendMessage;
 public class ExpertStatsAgent implements Bot{
-    private List<PlayerInfo> playerInfos = new ArrayList<PlayerInfo>(6); 
+    private HashMap<Integer, PlayerInfo> playerInfos = new HashMap<Integer, PlayerInfo>(); 
     int self; 
     int voteNo = 0; 
     private int leader; 
@@ -18,9 +20,9 @@ public class ExpertStatsAgent implements Bot{
     public ExpertStatsAgent(int self) {
         System.out.println(self); 
         this.self = self;  
-        playerInfos.add(null); 
+        playerInfos.put(0,null); 
         for (int i = 1; i <= 5; i++) {
-            playerInfos.add(new PlayerInfo(i,i==self));
+            playerInfos.put(i,new PlayerInfo(i,i==self));
         }
     }
     public int getId() {
@@ -41,11 +43,18 @@ public class ExpertStatsAgent implements Bot{
         mission.add(self); 
         missionSize--; 
         int counter = 1; 
-        Collections.sort(playerInfos); 
-        System.out.println("sorted probs for player " + self + ": " + playerInfos.toString());
+        // sort the hashtable
+        ArrayList<Map.Entry<?, PlayerInfo>> sortedInfos = new ArrayList(playerInfos.entrySet());
+        Collections.sort(sortedInfos, new Comparator<Map.Entry<?, PlayerInfo>>() {
+        	public int compare(Map.Entry<?, PlayerInfo> o1, Map.Entry<?, PlayerInfo> o2) {
+        		return o1.getValue().compareTo(o2.getValue());
+        	}
+        });
+        
+        System.out.println("sorted probs for player " + self + ": " + sortedInfos.toString());
         
         while (missionSize > 0) {
-            int id = playerInfos.get(counter).getId(); 
+            int id = sortedInfos.get(counter).getValue().getId(); 
             mission.add(id);
             missionSize--;
             counter++ ;
@@ -176,8 +185,9 @@ public class ExpertStatsAgent implements Bot{
     	ClientSendMessage message = new ClientSendMessage();
     	List<Integer> otherPlayers = new ArrayList<Integer>();
     	
-        for (PlayerInfo p : playerInfos) 
+        for (Map.Entry<Integer, PlayerInfo> pEntry: playerInfos.entrySet()) 
         {
+        	PlayerInfo p = pEntry.getValue();
             if (p != null) 
             {
             	if (p.isSpy() && isAccusal)
