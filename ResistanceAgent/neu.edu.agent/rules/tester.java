@@ -24,7 +24,7 @@ public class tester
             position.add(i); 
         }
         int lostGames = 0;
-        for (int count = 0; count < 1000; count++) {
+        for (int count = 0; count < 5000; count++) {
             Collections.shuffle(position); 
             List<Bot> bots = new ArrayList<Bot>();
             bots.add(null); 

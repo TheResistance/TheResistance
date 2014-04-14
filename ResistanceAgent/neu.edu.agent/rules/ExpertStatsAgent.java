@@ -14,9 +14,9 @@ public class ExpertStatsAgent implements Bot{
     int self; 
     int voteNo = 0; 
     private int leader; 
-    private double threshold = .7;
-    private double factualReduction = .9;
-    private double leaderReduction = .7;
+    private double threshold = .5;
+    private double factualReduction = .95;
+    private double leaderReduction = .2;
     private double communicationReduction = .7;
     
     
