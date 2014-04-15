@@ -128,8 +128,6 @@ public class Server
     protected void finalize() throws Throwable
     {
         
-        server.close();
-        
         for(Integer key : client_list.keySet())
         {
         	ClientServerSide s = client_list.get(key);
@@ -143,6 +141,7 @@ public class Server
                 e.printStackTrace();
             }
         }
+        server.close();
     }
 
 }
