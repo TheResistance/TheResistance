@@ -210,7 +210,7 @@ public class AgentLogic {
     	
     	try
     	{
-//    		client.out.defaultWriteObject();
+    		client.out.reset();
 			client.out.writeObject(message);
 			client.out.flush();
 		}
@@ -229,7 +229,7 @@ public class AgentLogic {
     		System.out.println("******");
     		try
 	    	{
-//    			client.out.defaultWriteObject();
+    			client.out.reset();
 	    		client.out.writeObject(message);
 	    		client.out.flush();
 	    	}

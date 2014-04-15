@@ -389,6 +389,7 @@ public class GameGui extends JFrame
     	selectionGui.dispose();
     	try
     	{
+    		client.out.reset();
 			client.out.writeObject(message);
 			client.out.flush();
 		}
@@ -407,7 +408,9 @@ public class GameGui extends JFrame
     	message.groupSelection = selections;
     	try
     	{
+    		client.out.reset();
 			client.out.writeObject(message);
+			client.out.flush();
 		} 
     	catch (IOException e) 
     	{

@@ -13,6 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Scanner;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -104,6 +105,11 @@ public class Client implements Runnable
 		                        	System.out.println("UH OH. WRONG MESSAGE TYPE");
 		                        }
                     		}
+                    	}
+                    	catch(SocketException se)
+                    	{
+                    		System.out.println("Caught SE. Ending app.");
+                    		System.exit(0);
                     	}
 	                    catch(Exception e)
 	                    { 
@@ -243,7 +249,9 @@ public class Client implements Runnable
 		message.message = vote;
 		try
 		{
+			out.reset();
 			out.writeObject(message);
+			out.flush();
 		}
 		catch (IOException e)
 		{

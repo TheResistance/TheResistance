@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Scanner;
 
 import core.ClientSendMessage;
@@ -69,6 +70,11 @@ public class ClientServerSide implements Runnable
 				//out.flush();
 			}
 		} 
+    	catch(SocketException se)
+    	{
+    		System.out.println("Caught SE. Ending app.");
+    		System.exit(0);
+    	}
 		catch (Exception e)
 		{
 			e.printStackTrace();

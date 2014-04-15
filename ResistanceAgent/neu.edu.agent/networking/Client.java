@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -109,6 +110,11 @@ public class Client implements Runnable
 		                        }
                     		}
                     	}
+                    	catch(SocketException se)
+                    	{
+                    		System.out.println("Caught SE. Ending app.");
+                    		System.exit(0);
+                    	}
 	                    catch(Exception e)
 	                    { 
 	                        e.printStackTrace(); 
@@ -156,11 +162,14 @@ public class Client implements Runnable
 
 	        ClientSendMessage suggestionResponse = bot.sendMessage(false);
 	        
-//	        if(accusalResponse.groupSelection.size() > 0)
-//	        {
-//	        	agent_logic.sendCommunication(accusalResponse);
-//	        }
-//	        agent_logic.sendCommunication(suggestionResponse);
+	        if(accusalResponse.groupSelection.size() > 0)
+	        {
+	        	agent_logic.sendCommunication(accusalResponse);
+	        }
+	        if(suggestionResponse.groupSelection.size() > 0)
+	        {
+	        	agent_logic.sendCommunication(suggestionResponse);
+	        }
 	        
 			//gui.gameMessages.setText(newText);
 		}
@@ -269,6 +278,7 @@ public class Client implements Runnable
 		message.message = vote;
 		try
 		{
+			out.reset();
 			out.writeObject(message);
 			out.flush();
 		}

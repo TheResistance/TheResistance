@@ -78,6 +78,7 @@ public class Server
 //        			System.out.println("1111C's output is null!");
         		if (message == null)
         			System.out.println("1111Message is null");
+        		c.out.reset();
 				c.out.writeObject(message);
 	        	c.out.flush();
 			}
@@ -100,6 +101,7 @@ public class Server
     			System.out.println("C IS NULL!");
     		if (c.out == null)
     			System.out.println("C's output is null!");
+    		c.out.reset();
 			c.out.writeObject(message);
         	c.out.flush();
 		}
