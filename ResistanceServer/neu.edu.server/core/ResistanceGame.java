@@ -64,7 +64,7 @@ public class ResistanceGame
         /*
          * Shuffle list again to find final order.
          */
-//        Collections.shuffle(order);
+        Collections.shuffle(order);
         String text = "Order: ";
         for (Integer i : order)
         {

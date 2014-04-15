@@ -72,6 +72,15 @@ public class ClientServerSide implements Runnable
 		} 
     	catch(SocketException se)
     	{
+    		try
+    		{
+    			socket.close();
+    		}
+    		catch (IOException e)
+    		{
+    			System.out.println("Attempt to close the socket failed.");
+    			e.printStackTrace();
+    		}
     		System.out.println("Caught SE. Ending app.");
     		System.exit(0);
     	}

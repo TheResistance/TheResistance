@@ -70,22 +70,29 @@ public class Server
     	for (Integer key : client_list.keySet())
     	{
     		ClientServerSide c = client_list.get(key);
-        	try 
-        	{
-//        		if (c == null)
-//        			System.out.println("1111C IS NULL!");
-//        		if (c.out == null)
-//        			System.out.println("1111C's output is null!");
-        		if (message == null)
-        			System.out.println("1111Message is null");
-        		c.out.reset();
-				c.out.writeObject(message);
-	        	c.out.flush();
-			}
-        	catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
+    		if (message != null && "communication".equals(message.phase) && c.playerNumber == message.playerNumber)
+    		{
+    			System.out.println("skipping comm for " + c.playerNumber);
+    		}
+    		else
+    		{
+	        	try 
+	        	{
+	//        		if (c == null)
+	//        			System.out.println("1111C IS NULL!");
+	//        		if (c.out == null)
+	//        			System.out.println("1111C's output is null!");
+	        		if (message == null)
+	        			System.out.println("1111Message is null");
+	        		c.out.reset();
+					c.out.writeObject(message);
+		        	c.out.flush();
+				}
+	        	catch (IOException e) 
+				{
+					e.printStackTrace();
+				}
+    		}
         }
     }
     
