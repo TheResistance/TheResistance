@@ -217,4 +217,20 @@ public class AgentLogic {
 			e.printStackTrace();
 		}
     }
+    
+    public void sendCommunication(ClientSendMessage message)
+    {
+    	if (message != null && message.groupSelection != null && message.groupSelection.size() > 0)
+    	{
+    		try
+	    	{
+	    		client.out.writeObject(message);
+	    		client.out.flush();
+	    	}
+	    	catch (IOException e)
+	    	{
+	    		e.printStackTrace();
+	    	}
+    	}
+    }
 }

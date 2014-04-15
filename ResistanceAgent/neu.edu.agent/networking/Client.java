@@ -147,7 +147,20 @@ public class Client implements Runnable
 		message.printMessage();
 		//agent_logic.setCurrentLeader(message.currentLeader);
 		agent_logic.isLeader = (message.currentLeader == agent_logic.playerNumber) ? true : false;
-		
+		if (message.missionResult != null)
+		{
+			System.out.println("$$$$$$$$ Calling onMissionComplete.");
+			bot.onMissionComplete(agent_logic.selectedTeam, message.missionFailVotes);
+	          
+	        ClientSendMessage accusalResponse = bot.sendMessage(true);
+
+	        ClientSendMessage suggestionResponse = bot.sendMessage(false);
+	        
+	        agent_logic.sendCommunication(accusalResponse);
+//	        agent_logic.sendCommunication(suggestionResponse);
+	        
+			//gui.gameMessages.setText(newText);
+		}
 		if("groupSelection".equals(message.phase) && message.playerTurn == agent_logic.playerNumber)
 		{
 			agent_logic.isMissionParticipant = false;
@@ -155,6 +168,8 @@ public class Client implements Runnable
 			agent_logic.phase = "groupSelection";
 			System.out.println("group size: " + message.groupSize);
 			agent_logic.sendGroupSelection(message.groupSize);
+			if (message.groupSelection != null && message.groupSelection.size() > 0)
+				agent_logic.setCurrentlySelectedTeam(message.groupSelection);
 		}
 		else if("communication".equals(message.phase))
 		{
@@ -176,13 +191,16 @@ public class Client implements Runnable
 				agent_logic.setTurnRole("Waiting...");
 				agent_logic.updateFactionInformation();
 			}
-			agent_logic.setCurrentlySelectedTeam(message.groupSelection);
+			if (message.groupSelection != null && message.groupSelection.size() > 0)
+				agent_logic.setCurrentlySelectedTeam(message.groupSelection);
 		}
 		else if("missionVote".equals(message.phase) && message.playerTurn == agent_logic.playerNumber)
 		{
 			agent_logic.isMissionParticipant = true;
 			agent_logic.phase = "missionVote";
 			agent_logic.setTurnRole("You are in the mission. Vote for the mission to succeed or fail.");
+			if (message.groupSelection != null && message.groupSelection.size() > 0)
+				agent_logic.setCurrentlySelectedTeam(message.groupSelection);
 			String vote = agent_logic.getMissionVote(); 
 			sendServerVote(agent_logic.phase,vote);
 		}
@@ -212,6 +230,8 @@ public class Client implements Runnable
 		}
 		else
 		{
+			if (message.groupSelection != null && message.groupSelection.size() > 0)
+				agent_logic.setCurrentlySelectedTeam(message.groupSelection);
 			agent_logic.isMissionParticipant = false;
 			agent_logic.setTurnRole("Waiting...");
 			agent_logic.updateFactionInformation();
@@ -231,10 +251,10 @@ public class Client implements Runnable
 			}
 			//gui.gameMessages.setText(newText + "\n");
 		}
-		if (message.missionResult != null)
+
+		if (message.currentLeader != 0)
 		{
-			bot.onMissionComplete(message.groupSelection, message.missionFailVotes);
-			//gui.gameMessages.setText(newText);
+			agent_logic.setCurrentLeader(message.currentLeader);
 		}
 	}
 	

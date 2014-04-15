@@ -51,9 +51,6 @@ class PlayerInfo implements Comparable<PlayerInfo>{
     public boolean  isResistance() {
         return resistance; 
     }
-    public double getProbability() {
-        return probability;
-    }
     public int compareTo(PlayerInfo p) {
         if (p == null) return 1;
         if (Math.abs(resistanceChance()-p.resistanceChance()) < 0.0001) return 0; 

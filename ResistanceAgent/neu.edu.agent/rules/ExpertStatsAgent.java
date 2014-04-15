@@ -15,7 +15,7 @@ public class ExpertStatsAgent implements Bot{
     int voteNo = 0; 
     private int leader; 
     private double threshold = .7;
-    private double factualReduction = .95;
+    private double factualReduction = .7;
     private double leaderReduction = .2;
     private double communicationReduction = .7;
     private double suggestionThreshold = .95;
@@ -125,9 +125,7 @@ public class ExpertStatsAgent implements Bot{
        
         if (self_c) {
           //  team.add((Integer) self); 
-        }
-                    
-      
+        }  
     }
     public void getMessage(ServerSendMessage msgs) {
         try {
@@ -145,11 +143,11 @@ public class ExpertStatsAgent implements Bot{
  
 			            if (msg.equals("accusal")) 
 			            {
-			            	if (playerInfos.get(player).getProbability() > threshold)
+			            	if (playerInfos.get(player).resistanceChance() > threshold)
 			            	{
 			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(communicationReduction);
 			            	}
-			            	else if (playerInfos.get(player).getProbability() < 1-threshold)
+			            	else if (playerInfos.get(player).resistanceChance() < 1-threshold)
 			            	{
 			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(1+(1-communicationReduction));
 			            	}
@@ -160,11 +158,11 @@ public class ExpertStatsAgent implements Bot{
 			            }
 			            if (msg.equals("suggestions")) 
 			            {			                
-			            	if (playerInfos.get(player).getProbability() > threshold)
+			            	if (playerInfos.get(player).resistanceChance() > threshold)
 			            	{
 			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(1+(1-communicationReduction));
 			            	}
-			            	else if (playerInfos.get(player).getProbability() < 1-threshold)
+			            	else if (playerInfos.get(player).resistanceChance() < 1-threshold)
 			            	{
 			            		playerInfos.get(other_player).updateResistanceProbabilityFromCommunication(communicationReduction);
 			            	}

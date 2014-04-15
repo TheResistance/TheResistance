@@ -316,7 +316,7 @@ public class ResistanceGame
 
 	    		message.missionResult = "fail";
 	    		message.missionFailVotes = failCount;
-	    		message.groupSize = missionSize[++missionNumber];
+	    		message.groupSize = gameOver ? 0 : missionSize[++missionNumber];
 	    		message.gameOver = gameOver;
 	    		// set the next player to the person after the leader. New round starting.
 	    		int next = nextInOrder(currentLeader);
@@ -346,7 +346,7 @@ public class ResistanceGame
     	    	}
     			int next = nextInOrder(currentLeader);
     			message.playerTurn = next;
-    			message.groupSize = missionSize[++missionNumber];
+    			message.groupSize = gameOver ? 0 : missionSize[++missionNumber];
     			message.gameOver = gameOver;
     			playerTurn = next;
     			currentLeader = next;
