@@ -15,7 +15,7 @@ public class ExpertStatsAgent implements Bot{
     int voteNo = 0; 
     private int leader; 
     
-    int neuroticism = 10; 
+    int neuroticism = 5; 
     MentalModel m = new MentalModel(neuroticism); //mean value = 5
     double threshold = m.getThreshold();
 	double factualReduction = m.getFactualReduction();
