@@ -30,6 +30,9 @@ class PlayerInfo implements Comparable<PlayerInfo>{
         factualProbability = 1.0f;  
         resistance = true; 
     }
+    public double getSuccessProbability() {
+    	return successProbability; 
+    }
     public void updateSuccessProbability(double value) {
     	successProbability += value; 
     	if (successProbability > 1.0)

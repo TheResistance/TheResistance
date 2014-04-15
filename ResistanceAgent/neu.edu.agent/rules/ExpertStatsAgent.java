@@ -14,12 +14,17 @@ public class ExpertStatsAgent implements Bot{
     int self; 
     int voteNo = 0; 
     private int leader; 
-    private double threshold = .7;
-    private double factualReduction = .7;
-    private double leaderReduction = .2;
-    private double communicationReduction = .7;
-    private double suggestionThreshold = .95;
     
+    int neuroticism = 10; 
+    MentalModel m = new MentalModel(neuroticism); //mean value = 5
+    double threshold = m.getThreshold();
+	double factualReduction = m.getFactualReduction();
+	double leaderReduction = m.getLeaderReduction();	
+	double communicationReduction = m.getCommunicationReduction();	
+	double suggestionThreshold = m.getSuggestionThreshold();	
+	double successThreshold = m.getSuccessThreshold();	
+	boolean useSuccess = m.isUseSuccess(); 
+	
     public ExpertStatsAgent(int self) {
         System.out.println(self); 
         this.self = self;  
@@ -72,7 +77,7 @@ public class ExpertStatsAgent implements Bot{
     }
     public boolean vote(List<Integer> team) {
         for (Integer player : team) {
-        	if (playerInfos.get(player).resistanceChance() < threshold)
+        	if (playerInfos.get(player).resistanceChance() < 1-threshold)
         		return false;
         }
         return true; 
@@ -85,8 +90,14 @@ public class ExpertStatsAgent implements Bot{
         System.out.println(team + " failed " + failVotes + " times."); 
         if (failVotes == 0)
         {
-        	for (Integer player : team)
-        		playerInfos.get(player).updateSuccessProbability(.2);
+        	for (Integer player : team) {
+        		if (useSuccess && playerInfos.get(player).factualProbability > successThreshold) {
+        			playerInfos.get(player).updateSuccessProbability(.2);
+        			playerInfos.get(player).factualProbability += playerInfos.get(player).getSuccessProbability();
+        		}
+        		//if (playerInfos.get(player).factualProbability > 1) 
+        		//	playerInfos.get(player).factualProbability=1;
+        	}
         	return;
         }
         boolean self_c = false; 
@@ -128,6 +139,7 @@ public class ExpertStatsAgent implements Bot{
         }  
     }
     public void getMessage(ServerSendMessage msgs) {
+    	
         try {
             int player = msgs.playerNumber; 
             String msg = msgs.message; 
@@ -183,10 +195,12 @@ public class ExpertStatsAgent implements Bot{
         {
         	e.printStackTrace();
         }
+        
 
     }
     public ClientSendMessage sendMessage(boolean isAccusal) 
     {
+    	
     	ClientSendMessage message = new ClientSendMessage();
     	List<Integer> otherPlayers = new ArrayList<Integer>();
     	

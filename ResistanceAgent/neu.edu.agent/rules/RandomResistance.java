@@ -1,5 +1,6 @@
 package rules; 
 
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List; 
 import java.util.ArrayList; 
@@ -44,11 +45,27 @@ public class RandomResistance implements Bot
     public void onMissionComplete(List<Integer> team, int failVotes) {
         return; 
     }
-    public void getMessage(ServerSendMessage msg) {
+ public void getMessage(ServerSendMessage msg) {
         
     }
     public ClientSendMessage sendMessage(boolean isAccusal) {
-        return null;
+    	ClientSendMessage message = new ClientSendMessage();
+    	message.playerId = number;
+    	message.messageType = "communication";
+    	message.message = isAccusal ? "accuses" : "suggests";
+    	
+    	List<Integer> otherPlayers = new ArrayList<Integer>();
+    	for (int i = 1; i <= 5; i++)
+    	{
+    		if (i != number)
+    			otherPlayers.add(i);
+    	}
+    	Collections.shuffle(otherPlayers);
+    	List<Integer> suggestedPlayers = new ArrayList<Integer>();
+    	suggestedPlayers.add(otherPlayers.get(0));
+    	message.groupSelection = suggestedPlayers;
+    	System.out.println("random res " + number + " " + message.message + " " + suggestedPlayers.toString());
+        return new ClientSendMessage();
     }
     
 }
