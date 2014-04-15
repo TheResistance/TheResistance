@@ -1,6 +1,9 @@
 package rules; 
 
 import java.util.*;
+
+import core.ClientSendMessage;
+import core.ServerSendMessage;
 /**
  * Write a description of class tester here.
  * 
@@ -88,21 +91,45 @@ public class tester
                 }
                 else
                 	lostTally++;
-                String message = "";
                 
                 for (int k = 1; k <= 5; k++ ) {
                     bots.get(k).onMissionComplete(team,lost); 
                     //message += bots.get(k).sendMessage();
                 }
-                for (int k = 1; k <= 5; k++) {
-                    System.out.print(message);
-                    //bots.get(k).getMessage(message);
+                for (int k = 1; k <= 5; k++)
+                {
+                    ClientSendMessage response = bots.get(k).sendMessage(true);
+                    ServerSendMessage firstMessage = new ServerSendMessage();
+                    firstMessage.playerNumber = response.playerId;
+                    firstMessage.phase = response.messageType;
+                    firstMessage.message = response.message;
+                    firstMessage.groupSelection = response.groupSelection;
+
+                    response = bots.get(k).sendMessage(false);
+                    ServerSendMessage secondMessage = new ServerSendMessage();
+                    secondMessage.playerNumber = response.playerId;
+                    secondMessage.phase = response.messageType;
+                    secondMessage.message = response.message;
+                    secondMessage.groupSelection = response.groupSelection;
+                    
+                	for (int j = 1; j <= 5; j++)
+                	{
+                		if (firstMessage.groupSelection.size() > 0)
+                		{
+                			bots.get(j).getMessage(firstMessage);
+                		}
+                		if (secondMessage.groupSelection.size() > 0)
+                		{
+                			bots.get(j).getMessage(secondMessage);
+                		}
+                	}
                 }
                 i++; 
             }
             rounds++;
             if (lostTally >= 3)
             	lostGames++;
+            
         }
         System.out.println("Players " + rounds + " won: % " + (100*(rounds-lostGames))/((double) rounds)); 
     }

@@ -14,11 +14,11 @@ public class ExpertStatsAgent implements Bot{
     int self; 
     int voteNo = 0; 
     private int leader; 
-    private double threshold = .5;
+    private double threshold = .7;
     private double factualReduction = .95;
     private double leaderReduction = .2;
     private double communicationReduction = .7;
-    
+    private double suggestionThreshold = .95;
     
     public ExpertStatsAgent(int self) {
         System.out.println(self); 
@@ -201,8 +201,9 @@ public class ExpertStatsAgent implements Bot{
             	{
             		otherPlayers.add(p.getId());
             	}
-            	if (!isAccusal && p.isResistance())
+            	if (!isAccusal && p.resistanceChance() > suggestionThreshold)
             	{
+            		System.out.println("$$$$$$" + p.getId() + " " + p.resistanceChance());
             		otherPlayers.add(p.getId());
             	}
             }
@@ -215,6 +216,7 @@ public class ExpertStatsAgent implements Bot{
         	message.message = isAccusal ? "accuses" : "suggests";
         	message.groupSelection = otherPlayers;
         }
+        System.out.println("Agent " + self + " " + message.message + " " + otherPlayers.toString());
         return message; 
     }
     
