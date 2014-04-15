@@ -210,7 +210,9 @@ public class AgentLogic {
     	
     	try
     	{
+//    		client.out.defaultWriteObject();
 			client.out.writeObject(message);
+			client.out.flush();
 		}
     	catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -222,8 +224,12 @@ public class AgentLogic {
     {
     	if (message != null && message.groupSelection != null && message.groupSelection.size() > 0)
     	{
+    		System.out.println("******");
+    		message.printMessage();
+    		System.out.println("******");
     		try
 	    	{
+//    			client.out.defaultWriteObject();
 	    		client.out.writeObject(message);
 	    		client.out.flush();
 	    	}

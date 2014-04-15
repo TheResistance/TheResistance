@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="neu.edu.client"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ResistanceCoreNetworkMessaging"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

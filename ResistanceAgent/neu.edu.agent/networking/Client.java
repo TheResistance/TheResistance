@@ -105,7 +105,7 @@ public class Client implements Runnable
 		                        }
 		                        else
 		                        {
-		                        	System.out.println("UH OH. WRONG MESSAGE TYPE");
+		                        	System.out.println("1111UH OH. WRONG MESSAGE TYPE");
 		                        }
                     		}
                     	}
@@ -156,7 +156,10 @@ public class Client implements Runnable
 
 	        ClientSendMessage suggestionResponse = bot.sendMessage(false);
 	        
-	        agent_logic.sendCommunication(accusalResponse);
+//	        if(accusalResponse.groupSelection.size() > 0)
+//	        {
+//	        	agent_logic.sendCommunication(accusalResponse);
+//	        }
 //	        agent_logic.sendCommunication(suggestionResponse);
 	        
 			//gui.gameMessages.setText(newText);
@@ -267,6 +270,7 @@ public class Client implements Runnable
 		try
 		{
 			out.writeObject(message);
+			out.flush();
 		}
 		catch (IOException e)
 		{

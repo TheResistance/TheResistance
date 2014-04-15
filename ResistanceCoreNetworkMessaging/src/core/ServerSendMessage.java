@@ -13,21 +13,21 @@ import java.util.List;
 
 public class ServerSendMessage implements Serializable
 {
-	public int playerTurn;
+	public Integer playerTurn = new Integer(0);
 	public List<Integer> groupSelection = new ArrayList<Integer>();
 	public String groupSelectionResult;
 	public String missionResult;
-	public int missionFailVotes;
+	public Integer missionFailVotes = new Integer(0);
 	public Hashtable<Integer,String> playerVotes = new Hashtable<Integer,String>();
-	public boolean gameOver;
+	public Boolean gameOver = new Boolean(false);
 	public String phase;
 	public String message;
-	public int missionNumber;
-	public int groupSize;
-	public int currentLeader;
+	public Integer missionNumber = new Integer(0);
+	public Integer groupSize = new Integer(0);
+	public Integer currentLeader = new Integer(0);
 	public String faction;
-	public int otherSpy;
-	public int playerNumber;
+	public Integer otherSpy = new Integer(0);
+	public Integer playerNumber = new Integer(0);
 	public String winners;
 	
 	public void printMessage()

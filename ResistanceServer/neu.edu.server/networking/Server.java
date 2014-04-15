@@ -67,13 +67,17 @@ public class Server
     public void sendAll(ServerSendMessage message)
     {
     	System.out.println("sending message");
-    	ObjectOutputStream out;
     	for (Integer key : client_list.keySet())
     	{
     		ClientServerSide c = client_list.get(key);
         	try 
         	{
-        		
+//        		if (c == null)
+//        			System.out.println("1111C IS NULL!");
+//        		if (c.out == null)
+//        			System.out.println("1111C's output is null!");
+        		if (message == null)
+        			System.out.println("1111Message is null");
 				c.out.writeObject(message);
 	        	c.out.flush();
 			}

@@ -12,7 +12,7 @@ Date: March 27, 2014
 
 public class ClientSendMessage implements Serializable
 {
-	public int playerId;
+	public Integer playerId = new Integer(0);
 	// groupSelection, groupApproval, missionVote
 	public String messageType;
 	public String message;

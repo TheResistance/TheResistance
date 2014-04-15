@@ -55,7 +55,7 @@ public class ResistanceGame
     	order = new ArrayList<Integer>();
         order.add(4);
         order.add(5);
-        Collections.shuffle(order);
+//        Collections.shuffle(order);
         spies[0] = order.get(0);
         spies[1] = order.get(1);
         order.add(1);
@@ -64,7 +64,7 @@ public class ResistanceGame
         /*
          * Shuffle list again to find final order.
          */
-        Collections.shuffle(order);
+//        Collections.shuffle(order);
         String text = "Order: ";
         for (Integer i : order)
         {

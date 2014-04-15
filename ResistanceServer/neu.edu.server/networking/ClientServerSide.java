@@ -59,12 +59,12 @@ public class ClientServerSide implements Runnable
 					clientMessage = (ClientSendMessage)input;
 					System.out.println("Player " + playerNumber + " said: ");
 					((ClientSendMessage) input).printMessage();
+					server.notifyServer(clientMessage);
 				}
 				else
 				{
 					System.out.println("WRONG MESSAGE TYPE");
 				}
-				server.notifyServer(clientMessage);
 				//out.println(client_name + " said: " + input);
 				//out.flush();
 			}

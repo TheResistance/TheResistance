@@ -375,6 +375,7 @@ public class GameGui extends JFrame
     	try
     	{
 			client.out.writeObject(message);
+			client.out.flush();
 		}
     	catch (IOException e) {
 			// TODO Auto-generated catch block
