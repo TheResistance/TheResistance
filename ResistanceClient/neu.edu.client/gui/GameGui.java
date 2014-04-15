@@ -20,9 +20,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultCaret;
 
 import core.ClientSendMessage;
 import networking.Client;
@@ -50,6 +52,8 @@ public class GameGui extends JFrame
 	public JTextField otherSpyText;
 	public JTextField selectedTeamText;
 	public JTextArea gameMessages;
+	
+	public JScrollPane scrollPane = new JScrollPane();
 	
 	public JRadioButton accuse = new JRadioButton("Accuse");
 	public JRadioButton suggest = new JRadioButton("Group Suggest");
@@ -178,11 +182,22 @@ public class GameGui extends JFrame
 		gameMessagesLabel.setBounds(25, 225, 525, 20);
 		
 		myFont = new Font("Sans Serif", Font.PLAIN, 10);
+		
+		scrollPane.setFont(myFont);
+		scrollPane.setBounds(25, 245, 525, 125);
+		
 		gameMessages = new JTextArea();
 		gameMessages.setFont(myFont);
+		gameMessages.setLineWrap(true);
+		gameMessages.setWrapStyleWord(true);
 		gameMessages.setBounds(25, 245, 525, 125);
 		gameMessages.setEditable(false);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.add(gameMessages);
+		scrollPane.setViewportView(gameMessages);
 		
+		DefaultCaret caret = (DefaultCaret)gameMessages.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		/*
 		 * This is for communication methods.
 		 */
@@ -274,7 +289,7 @@ public class GameGui extends JFrame
 		panel.add(selectedTeamLabel);
 		panel.add(selectedTeamText);
 		panel.add(gameMessagesLabel);
-		panel.add(gameMessages);
+		panel.add(scrollPane);
 		panel.add(acceptButton);
 		panel.add(rejectButton);
 
