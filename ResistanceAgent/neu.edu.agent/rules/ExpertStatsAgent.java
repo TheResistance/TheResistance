@@ -109,7 +109,7 @@ public class ExpertStatsAgent implements Bot{
         		playerInfos.get(player).factualProbability *= factualReduction;
         	}
         }
-        if (!team.contains(leader)) {
+        if (!team.contains(leader) && leader != 0) {
             System.out.println("Suspicious activity by " + leader); 
             playerInfos.get(leader).factualProbability *= leaderReduction;
         }

@@ -53,14 +53,14 @@ public class ResistanceGame
     	 * Shuffle list, first two are the spies.
     	 */
     	order = new ArrayList<Integer>();
-        order.add(2);
-        order.add(3);
         order.add(4);
         order.add(5);
         Collections.shuffle(order);
         spies[0] = order.get(0);
         spies[1] = order.get(1);
         order.add(1);
+        order.add(2);
+        order.add(3);
         /*
          * Shuffle list again to find final order.
          */
